@@ -17,6 +17,14 @@ export async function getProjects() {
   }
 }
 
+// دالة مساعدة لتوليد اسم ملف آمن
+const generateSafeFileName = (originalName: string) => {
+  const fileExt = originalName.split(".").pop() || "png";
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(2, 7);
+  return `${timestamp}-${randomString}.${fileExt}`;
+};
+
 // دالة إنشاء مشروع جديد مع معالجة رفع الصورة
 export async function createProject(formData: FormData) {
   try {
@@ -36,12 +44,15 @@ export async function createProject(formData: FormData) {
       return { success: false, error: "جميع الحقول الإلزامية مطلوبة" };
     }
 
+    // توليد اسم آمن للملف لتجنب الحروف العربية والرموز
+    const safeFileName = generateSafeFileName(imageFile.name);
+
     // رفع الصورة إلى Supabase Storage
     const imageBytes = await imageFile.arrayBuffer();
     const buffer = Buffer.from(imageBytes);
     const imageUrl = await uploadProjectImage(
       buffer,
-      imageFile.name,
+      safeFileName,
       imageFile.type
     );
 
@@ -98,13 +109,15 @@ export async function updateProject(id: string, formData: FormData) {
 
     let imageUrl: string | undefined = undefined;
 
-    // إذا تم رفع صورة جديدة، يتم رفعها عبر دالة المساعدة
+    // إذا تم رفع صورة جديدة، يتم توليد اسم آمن لها ورفعها
     if (imageFile && imageFile.size > 0) {
+      const safeFileName = generateSafeFileName(imageFile.name);
+      
       const imageBytes = await imageFile.arrayBuffer();
       const buffer = Buffer.from(imageBytes);
       imageUrl = await uploadProjectImage(
         buffer,
-        imageFile.name,
+        safeFileName,
         imageFile.type
       );
     }

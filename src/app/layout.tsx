@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Navbar from '../components/common/Navbar'
 import Footer from '../components/common/Footer'
-import { ProjectsProvider } from '@/context/ProjectsContext'
 import { siteConfig } from '@/config/site'
 import { services } from '@/data/siteData'
 
@@ -79,17 +78,15 @@ export default function RootLayout({
   }
   return (
     <html lang="ar" dir="rtl">
-      <body className="bg-gray-50 text-gray-900 antialiased font-sans">
+      <body className="bg-gray-50 text-gray-900 antialiased font-sans overflow-x-hidden">
         <script
           key="ld-json"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <ProjectsProvider>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </ProjectsProvider>
+        <Navbar />
+        <main className="min-h-screen">{children}</main>
+        <Footer />
       </body>
     </html>
   )

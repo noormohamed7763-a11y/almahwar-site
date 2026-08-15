@@ -29,7 +29,6 @@ export default function AdminDashboardPage() {
   const [isLoadingData, setIsLoadingData] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
 
-  // حالات النافذة المنبثقة (إضافة أو تعديل)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
@@ -37,7 +36,6 @@ export default function AdminDashboardPage() {
   const [isPending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  // جلب قائمة المشاريع
   const fetchProjectsList = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/projects', { cache: 'no-store' })
@@ -58,7 +56,6 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     let isMounted = true
-
     const loadInitialData = async () => {
       try {
         const res = await fetch('/api/admin/projects', { cache: 'no-store' })
@@ -73,17 +70,11 @@ export default function AdminDashboardPage() {
       } catch {
         console.error('Failed to load projects')
       } finally {
-        if (isMounted) {
-          setIsLoadingData(false)
-        }
+        if (isMounted) setIsLoadingData(false)
       }
     }
-
     loadInitialData()
-
-    return () => {
-      isMounted = false
-    }
+    return () => { isMounted = false }
   }, [router])
 
   const handleLogout = async () => {
@@ -98,7 +89,6 @@ export default function AdminDashboardPage() {
 
   const handleDelete = async (id: string, title: string) => {
     if (!confirm(`هل أنت متأكد من رغبتك في حذف مشروع "${title}" نهائياً؟`)) return
-
     setDeletingId(id)
     try {
       const res = await deleteProject(id)
@@ -115,7 +105,6 @@ export default function AdminDashboardPage() {
     }
   }
 
-  // حفظ أو تحديث المشروع
   const handleSubmitProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setActionError(null)
@@ -156,9 +145,8 @@ export default function AdminDashboardPage() {
   const ongoingCount = projects.filter((p) => p.status === 'ongoing').length
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] py-10">
+    <main className="min-h-screen bg-[#f8fafc] py-10" dir="rtl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* رأس اللوحة */}
         <header className="flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1a233a] text-[#c5a059]">
@@ -166,38 +154,19 @@ export default function AdminDashboardPage() {
             </div>
             <div>
               <h1 className="text-xl font-extrabold text-[#1a233a]">لوحة تحكم المشاريع</h1>
-              <p className="text-xs text-gray-500">إدارة قاعدة بيانات الأعمال الميدانية وسابقة المشاريع</p>
+              <p className="text-xs text-gray-500">إدارة قاعدة بيانات الأعمال والمشاريع</p>
             </div>
           </div>
-
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/"
-              target="_blank"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100"
-            >
+            <Link href="/" target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100">
               <span>معاينة الموقع</span>
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
-
-            <button
-              onClick={() => {
-                setEditingProject(null)
-                setActionError(null)
-                setPreviewImage(null)
-                setIsModalOpen(true)
-              }}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-4 py-2.5 text-xs font-bold text-[#1a233a] shadow-sm transition hover:brightness-105"
-            >
+            <button onClick={() => { setEditingProject(null); setActionError(null); setPreviewImage(null); setIsModalOpen(true); }} className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-4 py-2.5 text-xs font-bold text-[#1a233a] shadow-sm transition hover:brightness-105">
               <Plus className="h-4 w-4" />
               <span>إضافة مشروع جديد</span>
             </button>
-
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 transition hover:bg-red-100"
-              title="تسجيل الخروج"
-            >
+            <button onClick={handleLogout} className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 transition hover:bg-red-100" title="تسجيل الخروج">
               <LogOut className="h-4 w-4" />
             </button>
           </div>
@@ -236,7 +205,7 @@ export default function AdminDashboardPage() {
           </div>
         </section>
 
-        {/* البحث */}
+        {/* شريط البحث */}
         <section className="mt-8">
           <div className="relative">
             <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -250,7 +219,7 @@ export default function AdminDashboardPage() {
           </div>
         </section>
 
-        {/* الجدول */}
+        {/* جدول عرض المشاريع */}
         <section className="mt-6">
           {isLoadingData ? (
             <div className="flex h-64 items-center justify-center rounded-3xl bg-white ring-1 ring-gray-200/70">
@@ -274,85 +243,43 @@ export default function AdminDashboardPage() {
                       <tr key={project.id} className="transition hover:bg-gray-50/50">
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-3">
-                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gray-100">
-                              <Image
-                                src={project.image}
-                                alt={project.title}
-                                fill
-                                sizes="56px"
-                                className="object-cover"
-                              />
+                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                              <Image src={project.image} alt={project.title} fill className="object-cover" />
                             </div>
                             <div>
                               <p className="font-bold text-[#1a233a]">{project.title}</p>
-                              <span className="text-xs text-gray-400">
-                                {project.completionYear ? `سنة ${project.completionYear}` : '—'}
-                              </span>
+                              <span className="text-xs text-gray-400">{project.completionYear ? `سنة ${project.completionYear}` : '—'}</span>
                             </div>
                           </div>
                         </td>
-
                         <td className="py-4 px-6">
-                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
-                            {project.category}
-                          </span>
+                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">{project.category}</span>
                         </td>
-
                         <td className="py-4 px-6 text-xs text-gray-600">
                           <div>{project.location}</div>
                           <div className="text-gray-400">{project.area || '—'}</div>
                         </td>
-
                         <td className="py-4 px-6">
                           {project.status === 'ongoing' ? (
                             <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700">
-                              <Clock className="h-3 w-3" />
-                              قيد التنفيذ
+                              <Clock className="h-3 w-3" /> قيد التنفيذ
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
-                              <CheckCircle2 className="h-3 w-3" />
-                              مكتمل
+                              <CheckCircle2 className="h-3 w-3" /> مكتمل
                             </span>
                           )}
                         </td>
-
                         <td className="py-4 px-6 text-center">
                           <div className="flex items-center justify-center gap-2">
-                            {/* زر التعديل */}
-                            <button
-                              onClick={() => {
-                                setEditingProject(project)
-                                setPreviewImage(project.image)
-                                setActionError(null)
-                                setIsModalOpen(true)
-                              }}
-                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition hover:bg-blue-600 hover:text-white"
-                              title="تعديل المشروع"
-                            >
+                            <button onClick={() => { setEditingProject(project); setPreviewImage(project.image); setActionError(null); setIsModalOpen(true); }} className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition hover:bg-blue-600 hover:text-white" title="تعديل">
                               <Pencil className="h-4 w-4" />
                             </button>
-
-                            <Link
-                              href={`/projects/${project.slug}`}
-                              target="_blank"
-                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 text-gray-600 transition hover:bg-[#1a233a] hover:text-[#c5a059]"
-                              title="عرض في الموقع"
-                            >
+                            <Link href={`/projects/${project.slug}`} target="_blank" className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 text-gray-600 transition hover:bg-[#1a233a] hover:text-[#c5a059]" title="معاينة">
                               <ExternalLink className="h-4 w-4" />
                             </Link>
-
-                            <button
-                              onClick={() => handleDelete(project.id, project.title)}
-                              disabled={deletingId === project.id}
-                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-600 hover:text-white disabled:opacity-50"
-                              title="حذف المشروع"
-                            >
-                              {deletingId === project.id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="h-4 w-4" />
-                              )}
+                            <button onClick={() => handleDelete(project.id, project.title)} disabled={deletingId === project.id} className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-600 hover:text-white" title="حذف">
+                              {deletingId === project.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                             </button>
                           </div>
                         </td>
@@ -370,17 +297,14 @@ export default function AdminDashboardPage() {
           )}
         </section>
 
-        {/* النافذة المنبثقة لإضافة أو تعديل مشروع */}
+        {/* النافذة المنبثقة لإضافة أو تعديل مشروع (تتضمن كافة الحقول) */}
         {isModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
             <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="absolute left-6 top-6 rounded-full bg-gray-100 p-2 text-gray-400 transition hover:text-[#1a233a]"
-              >
+              <button onClick={() => setIsModalOpen(false)} className="absolute left-6 top-6 rounded-full bg-gray-100 p-2 text-gray-400 transition hover:text-[#1a233a]">
                 <X className="h-5 w-5" />
               </button>
-
+              
               <h2 className="text-xl font-extrabold text-[#1a233a]">
                 {editingProject ? 'تعديل بيانات المشروع' : 'إضافة مشروع جديد'}
               </h2>
@@ -396,6 +320,7 @@ export default function AdminDashboardPage() {
               )}
 
               <form onSubmit={handleSubmitProject} className="mt-6 space-y-4">
+                {/* عنوان المشروع */}
                 <div>
                   <label className="block text-xs font-bold text-gray-700">عنوان المشروع *</label>
                   <input
@@ -408,6 +333,7 @@ export default function AdminDashboardPage() {
                   />
                 </div>
 
+                {/* التصنيف والموقع */}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="block text-xs font-bold text-gray-700">التصنيف *</label>
@@ -436,6 +362,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
+                {/* المساحة، سنة التنفيذ، الحالة */}
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div>
                     <label className="block text-xs font-bold text-gray-700">المساحة</label>
@@ -471,6 +398,7 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
+                {/* وصف المشروع */}
                 <div>
                   <label className="block text-xs font-bold text-gray-700">وصف المشروع *</label>
                   <textarea
@@ -478,7 +406,7 @@ export default function AdminDashboardPage() {
                     rows={3}
                     required
                     defaultValue={editingProject?.description || ''}
-                    placeholder="اكتب نبذة هندسية..."
+                    placeholder="اكتب نبذة هندسية عن تفاصيل العمل والمواصفات..."
                     className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
                   />
                 </div>
@@ -488,46 +416,46 @@ export default function AdminDashboardPage() {
                   <label className="block text-xs font-bold text-gray-700">
                     صورة المشروع {editingProject ? '(اختياري للاستبدال)' : '*'}
                   </label>
-                  <div className="mt-1.5 flex items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 p-4 transition hover:border-[#c5a059]">
-                    {previewImage ? (
-                      <div className="relative h-40 w-full overflow-hidden rounded-xl">
-                        <Image
-                          src={previewImage}
-                          alt="معاينة"
-                          fill
-                          className="object-cover"
-                        />
+                  <div className="mt-1.5 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 p-4 transition hover:border-[#c5a059]">
+                    {previewImage && (
+                      <div className="relative mb-3 h-40 w-full overflow-hidden rounded-xl">
+                        <Image src={previewImage} alt="معاينة" fill className="object-cover" />
                         <button
                           type="button"
-                          onClick={() => setPreviewImage(null)}
+                          onClick={() => {
+                            setPreviewImage(null)
+                            const input = document.getElementById('project-image-input') as HTMLInputElement
+                            if (input) input.value = ''
+                          }}
                           className="absolute left-2 top-2 rounded-full bg-red-600 p-1.5 text-white"
                         >
                           <X className="h-4 w-4" />
                         </button>
                       </div>
-                    ) : (
-                      <label className="flex cursor-pointer flex-col items-center gap-2 text-center text-xs text-gray-500">
-                        <Upload className="h-8 w-8 text-[#c5a059]" />
-                        <span className="font-bold text-[#1a233a]">اضغط هنا لاختيار صورة بديلة</span>
-                        <input
-                          name="image"
-                          type="file"
-                          accept="image/*"
-                          required={!editingProject}
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0]
-                            if (file) {
-                              setPreviewImage(URL.createObjectURL(file))
-                            }
-                          }}
-                        />
-                      </label>
                     )}
+                    <label className="flex w-full cursor-pointer flex-col items-center gap-2 text-center text-xs text-gray-500">
+                      <Upload className="h-8 w-8 text-[#c5a059]" />
+                      <span className="font-bold text-[#1a233a]">
+                        {previewImage ? 'اضغط هنا لتغيير الصورة' : 'اضغط هنا لاختيار صورة المشروع'}
+                      </span>
+                      <input
+                        id="project-image-input"
+                        name="image"
+                        type="file"
+                        accept="image/*"
+                        required={!editingProject && !previewImage}
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) setPreviewImage(URL.createObjectURL(file))
+                        }}
+                      />
+                    </label>
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-end gap-3 pt-4">
+                {/* أزرار الحفظ والإلغاء */}
+                <div className="mt-6 flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
