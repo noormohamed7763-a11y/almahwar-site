@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ProjectStatus {
+  completed
+  ongoing
+}
+
+model Project {
+  id             String        @id @default(cuid())
+  slug           String        @unique
+  title          String
+  category       String
+  location       String        @default("جدة")
+  area           String?
+  completionYear String?
+  description    String
+  image          String
+  gallery        String[]      @default([])
+  materials      String[]      @default([])
+  features       String[]      @default([])
+  status         ProjectStatus @default(completed)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([category])
+}

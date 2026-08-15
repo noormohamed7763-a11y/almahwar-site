@@ -1,44 +1,42 @@
+import React from 'react'
 import { BadgeCheck, Award, CalendarCheck, Wallet } from 'lucide-react'
 import SectionHeading from '@/components/ui/SectionHeading'
 
 const features = [
   {
     icon: BadgeCheck,
-    title: 'جودة مضمونة',
-    description:
-      'نعتمد أعلى معايير الجودة في التنفيذ ونستخدم أجود الخامات مع ضمان حقيقي على جميع أعمالنا.',
+    title: 'جودة وضمان معتمد',
+    description: 'نعتمد أعلى المواصفات الفنية مع تقديم ضمان حقيقي على كافة أعمال العزل والهياكل الإنشائية.',
   },
   {
     icon: Award,
-    title: 'خبرة واسعة',
-    description:
-      'فريق من المهندسين والفنيين بخبرة تمتد لسنوات في تنفيذ مشاريع متنوعة في جميع أنحاء المملكة.',
+    title: 'كادر هندسي متخصص',
+    description: 'فريق من المهندسين والفنيين المؤهلين بخبرة ميدانية واسعة في تنفيذ كبرى المشاريع الصناعية والتجارية.',
   },
   {
     icon: CalendarCheck,
-    title: 'التزام بالمواعيد',
-    description:
-      'نلتزم بجدول التنفيذ المتفق عليه بدقة، لنضمن تسليم مشروعك في الوقت المحدد دون تأخير.',
+    title: 'الالتزام التام بالمواعيد',
+    description: 'جدولة زمنية دقيقة تضمن تسليم كافة مراحل المشروع في موعدها المحدد وفق العقد المبرم.',
   },
   {
     icon: Wallet,
-    title: 'أسعار تنافسية',
-    description:
-      'عروض أسعار شفافة وتنافسية بدون أي تكاليف خفية، لتلائم مختلف الميزانيات واحتياجات المشاريع.',
+    title: 'تسعير واضح وشفاف',
+    description: 'عروض أسعار تفصيلية توضح كافة بنود التوريد والتركيب دون أي تكاليف إضافية غير معلنة.',
   },
 ]
 
 export default function WhyUsSection() {
   return (
-    <section className="bg-[#1a233a] py-20">
-      <div className="mx-auto max-w-7xl px-4">
+    <section className="bg-[#1a233a] py-20 text-white" dir="rtl">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="لماذا نحن؟"
-          title="مميزات تجعلنا الخيار الأول"
-          description="نلتزم بأعلى المعايير المهنية لنقدم لعملائنا تجربة بناء استثنائية من البداية حتى التسليم."
+          eyebrow="لماذا تختارنا؟"
+          title="معايير تجعلنا الخيار الموثوق لمشروعك"
+          description="نجمع بين الدقة الهندسية والسرعة في التنفيذ لتقديم أفضل قيمة استثمارية لعملائنا."
           dark
         />
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => {
             const Icon = feature.icon
             return (
@@ -46,11 +44,11 @@ export default function WhyUsSection() {
                 key={feature.title}
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center transition duration-300 hover:-translate-y-1 hover:border-[#c5a059]/50 hover:bg-white/10"
               >
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#c5a059] text-[#1a233a] shadow-lg shadow-[#c5a059]/30">
-                  <Icon className="h-8 w-8" />
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#c5a059] text-[#1a233a] shadow-lg shadow-[#c5a059]/20">
+                  <Icon className="h-7 w-7" />
                 </div>
-                <h3 className="mt-5 text-lg font-bold text-white">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-gray-400">
+                <h3 className="mt-5 text-base font-bold text-white">{feature.title}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-gray-300">
                   {feature.description}
                 </p>
               </div>

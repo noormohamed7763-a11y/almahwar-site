@@ -1,519 +1,560 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect, useTransition, useCallback } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  LayoutDashboard,
   Plus,
   Trash2,
-  Edit3,
-  Check,
-  X,
+  Pencil,
+  ExternalLink,
   LogOut,
+  FolderGit2,
+  CheckCircle2,
+  Clock,
+  Search,
+  Loader2,
   Upload,
-  ImageIcon,
-  FolderOpen,
+  AlertCircle,
+  X,
+  Building,
 } from 'lucide-react'
-import { useProjects } from '@/context/ProjectsContext'
 import { ProjectItem } from '@/types'
-
-// مكتبة الصور الجاهزة في المشروع
-const PRESET_GALLERY = [
-  { label: 'مستودع سندوتش بانل 1', src: '/images/hero/sandwich-panel-1.jpg' },
-  { label: 'مستودع سندوتش بانل 2', src: '/images/hero/sandwich-panel-2.jpg' },
-  { label: 'مظلات مواقف 1', src: '/images/hero/canopy-1.jpg' },
-  { label: 'مظلات وسواتر 2', src: '/images/hero/canopy-2.jpg' },
-  { label: 'مستودع صناعي', src: '/images/projects/warehouse-1.jpg' },
-  { label: 'مصنع متكامل', src: '/images/projects/warehouse-2.jpg' },
-  { label: 'مظلات سيارات', src: '/images/projects/car-canopy-1.jpg' },
-  { label: 'مظلات مداخل', src: '/images/projects/car-canopy-2.jpg' },
-  { label: 'سواتر حدائق', src: '/images/projects/garden-1.jpg' },
-  { label: 'استراحات ومسابح', src: '/images/projects/garden-2.jpg' },
-]
-
-const CATEGORIES = [
-  'سندوتش بانل ومستودعات',
-  'مظلات وسواتر',
-  'بناء عام وترميم',
-  'دهانات وديكورات',
-  'أخرى',
-]
+import { createProject, updateProject, deleteProject } from '@/app/actions/projects'
 
 export default function AdminDashboardPage() {
   const router = useRouter()
-  const { projects, addProject, updateProject, deleteProject } = useProjects()
+  const [projects, setProjects] = useState<ProjectItem[]>([])
+  const [isLoadingData, setIsLoadingData] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // حالة إضافة مشروع جديد
-  const [title, setTitle] = useState('')
-  const [category, setCategory] = useState(CATEGORIES[0])
-  const [description, setDescription] = useState('')
-  const [selectedImage, setSelectedImage] = useState(PRESET_GALLERY[0].src)
-  const [showGalleryModal, setShowGalleryModal] = useState(false)
+  // حالات النافذة المنبثقة (إضافة أو تعديل)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingProject, setEditingProject] = useState<ProjectItem | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  // حالة تعديل مشروع
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState<Partial<ProjectItem>>({})
-  const [showEditGalleryModal, setShowEditGalleryModal] = useState(false)
-
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const editFileInputRef = useRef<HTMLInputElement>(null)
-
-  // تسجيل الخروج
-  const handleLogout = async () => {
-    await fetch('/api/admin/login', { method: 'DELETE' }).catch(() => {})
-    router.push('/admin/login')
-    router.refresh()
-  }
-
-  // رفع صورة من الجهاز وتحويلها إلى Base64
-  const handleFileUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    isEditing = false
-  ) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert('حجم الصورة كبير جداً، يرجى اختيار صورة أقل من 2 ميجابايت.')
-      return
+  // جلب قائمة المشاريع
+  const fetchProjectsList = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/projects', { cache: 'no-store' })
+      if (res.status === 401) {
+        router.replace('/admin/login')
+        return
+      }
+      const data = await res.json()
+      if (data.projects) {
+        setProjects(data.projects)
+      }
+    } catch {
+      console.error('Failed to load projects')
+    } finally {
+      setIsLoadingData(false)
     }
+  }, [router])
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const result = reader.result as string
-      if (isEditing) {
-        setEditForm((prev) => ({ ...prev, image: result }))
-      } else {
-        setSelectedImage(result)
+  useEffect(() => {
+    let isMounted = true
+
+    const loadInitialData = async () => {
+      try {
+        const res = await fetch('/api/admin/projects', { cache: 'no-store' })
+        if (res.status === 401) {
+          router.replace('/admin/login')
+          return
+        }
+        const data = await res.json()
+        if (isMounted && data.projects) {
+          setProjects(data.projects)
+        }
+      } catch {
+        console.error('Failed to load projects')
+      } finally {
+        if (isMounted) {
+          setIsLoadingData(false)
+        }
       }
     }
-    reader.readAsDataURL(file)
+
+    loadInitialData()
+
+    return () => {
+      isMounted = false
+    }
+  }, [router])
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/login', { method: 'DELETE' })
+      router.replace('/admin/login')
+      router.refresh()
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
   }
 
-  // إرسال إضافة مشروع جديد
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleDelete = async (id: string, title: string) => {
+    if (!confirm(`هل أنت متأكد من رغبتك في حذف مشروع "${title}" نهائياً؟`)) return
+
+    setDeletingId(id)
+    try {
+      const res = await deleteProject(id)
+      if (res.success) {
+        setProjects((prev) => prev.filter((p) => p.id !== id))
+        router.refresh()
+      } else {
+        alert(res.error || 'فشل حذف المشروع')
+      }
+    } catch {
+      alert('حدث خطأ أثناء الحذف')
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  // حفظ أو تحديث المشروع
+  const handleSubmitProject = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!title.trim() || !description.trim()) {
-      alert('يرجى ملء كافة الحقول')
-      return
-    }
+    setActionError(null)
 
-    addProject({
-      title: title.trim(),
-      category,
-      description: description.trim(),
-      image: selectedImage,
+    const formElement = e.currentTarget
+    const formData = new FormData(formElement)
+
+    startTransition(async () => {
+      let res
+      if (editingProject) {
+        res = await updateProject(editingProject.id, formData)
+      } else {
+        res = await createProject(formData)
+      }
+
+      if (res.success && res.project) {
+        setIsModalOpen(false)
+        setEditingProject(null)
+        setPreviewImage(null)
+        formElement.reset()
+        await fetchProjectsList()
+        router.refresh()
+      } else {
+        setActionError(res.error || 'فشل حفظ المشروع')
+      }
     })
-
-    setTitle('')
-    setDescription('')
-    alert('تمت إضافة المشروع بنجاح!')
   }
 
-  // بدء التعديل
-  const startEditing = (project: ProjectItem) => {
-    setEditingId(project.id)
-    setEditForm({ ...project })
-  }
+  const filteredProjects = projects.filter(
+    (p) =>
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.location.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
-  // حفظ التعديل
-  const saveEdit = (id: string) => {
-    if (!editForm.title?.trim() || !editForm.description?.trim()) {
-      alert('يرجى ملء كافة البيانات')
-      return
-    }
-    updateProject(id, editForm)
-    setEditingId(null)
-    setEditForm({})
-  }
+  const totalCount = projects.length
+  const completedCount = projects.filter((p) => p.status === 'completed').length
+  const ongoingCount = projects.filter((p) => p.status === 'ongoing').length
 
   return (
-    <main dir="rtl" className="min-h-screen bg-[#f5f7fa] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-5xl space-y-8">
-        
-        {/* شريط رأس لوحة التحكم */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#1a233a] text-[#c5a059]">
-              <LayoutDashboard className="h-6 w-6" />
+    <main className="min-h-screen bg-[#f8fafc] py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* رأس اللوحة */}
+        <header className="flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1a233a] text-[#c5a059]">
+              <Building className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-extrabold text-[#1a233a]">لوحة تحكم المشاريع</h1>
-              <p className="text-xs text-gray-500">إدارة وتحديث مشاريع شركة المحور الهندسي</p>
+              <h1 className="text-xl font-extrabold text-[#1a233a]">لوحة تحكم المشاريع</h1>
+              <p className="text-xs text-gray-500">إدارة قاعدة بيانات الأعمال الميدانية وسابقة المشاريع</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="rounded-full bg-[#c5a059]/10 px-3.5 py-1.5 text-xs font-bold text-[#c5a059]">
-              المشاريع النشطة: {projects.length}
-            </span>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              href="/"
+              target="_blank"
+              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100"
+            >
+              <span>معاينة الموقع</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </Link>
+
+            <button
+              onClick={() => {
+                setEditingProject(null)
+                setActionError(null)
+                setPreviewImage(null)
+                setIsModalOpen(true)
+              }}
+              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-4 py-2.5 text-xs font-bold text-[#1a233a] shadow-sm transition hover:brightness-105"
+            >
+              <Plus className="h-4 w-4" />
+              <span>إضافة مشروع جديد</span>
+            </button>
+
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 transition hover:bg-red-50 hover:text-red-600"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 transition hover:bg-red-100"
+              title="تسجيل الخروج"
             >
               <LogOut className="h-4 w-4" />
-              تسجيل الخروج
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* نموذج إضافة مشروع جديد */}
-        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:p-8">
-          <h2 className="flex items-center gap-2 text-lg font-bold text-[#1a233a]">
-            <Plus className="h-5 w-5 text-[#c5a059]" />
-            إضافة مشروع جديد
-          </h2>
-
-          <form onSubmit={handleAddSubmit} className="mt-6 space-y-6">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div>
-                <label className="block text-xs font-bold text-gray-700">عنوان المشروع</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="مثال: توريد وتركيب مستودع صناعي"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#c5a059]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700">التصنيف</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#c5a059]"
-                >
-                  {CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-              </div>
+        {/* بطاقات الإحصائيات */}
+        <section className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="flex items-center gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+              <FolderGit2 className="h-6 w-6" />
             </div>
-
-            {/* قسم اختيار ومعاينة الصورة */}
             <div>
-              <label className="block text-xs font-bold text-gray-700">صورة المشروع</label>
-              <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center">
-                {/* معاينة الصورة المحددة */}
-                <div className="relative h-28 w-44 shrink-0 overflow-hidden rounded-xl bg-gray-100 ring-2 ring-[#c5a059]/40">
-                  <Image
-                    src={selectedImage}
-                    alt="معاينة الصورة"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                {/* أزرار الاختيار والرفع */}
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowGalleryModal(true)}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#1a233a] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[#2c3e63]"
-                  >
-                    <FolderOpen className="h-4 w-4 text-[#c5a059]" />
-                    اختيار من المعرض الجاهز
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold text-gray-700 shadow-sm transition hover:bg-gray-50"
-                  >
-                    <Upload className="h-4 w-4 text-gray-500" />
-                    رفع صورة من جهازك
-                  </button>
-
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleFileUpload(e, false)}
-                  />
-                </div>
-              </div>
+              <span className="text-xs font-semibold text-gray-500">إجمالي المشاريع</span>
+              <p className="text-2xl font-black text-[#1a233a]">{totalCount}</p>
             </div>
+          </div>
 
+          <div className="flex items-center gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
             <div>
-              <label className="block text-xs font-bold text-gray-700">الوصف والمواصفات</label>
-              <textarea
-                rows={3}
-                required
-                placeholder="تفاصيل المشروع والمواصفات الهندسية المنفذة..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-2 w-full rounded-xl border border-gray-200 px-4 py-3 text-sm outline-none transition focus:border-[#c5a059]"
-              />
+              <span className="text-xs font-semibold text-gray-500">تم التسليم بنجاح</span>
+              <p className="text-2xl font-black text-emerald-600">{completedCount}</p>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              className="w-full rounded-xl bg-[#1a233a] py-3.5 text-sm font-bold text-[#c5a059] shadow-md transition hover:bg-[#1a233a]/90"
-            >
-              إضافة المشروع للمعرض
-            </button>
-          </form>
+          <div className="flex items-center gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+              <Clock className="h-6 w-6" />
+            </div>
+            <div>
+              <span className="text-xs font-semibold text-gray-500">قيد التنفيذ</span>
+              <p className="text-2xl font-black text-amber-600">{ongoingCount}</p>
+            </div>
+          </div>
         </section>
 
-        {/* قائمة المشاريع الحالية */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-bold text-[#1a233a]">المشاريع المتاحة حالياً ({projects.length})</h2>
+        {/* البحث */}
+        <section className="mt-8">
+          <div className="relative">
+            <Search className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="ابحث باسم المشروع، التصنيف، أو المدينة..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pl-4 pr-11 text-sm outline-none transition focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/20"
+            />
+          </div>
+        </section>
 
-          <div className="space-y-4">
-            {projects.map((project) => {
-              const isEditing = editingId === project.id
-
-              return (
-                <div
-                  key={project.id}
-                  className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100 transition hover:shadow-md"
-                >
-                  {isEditing ? (
-                    /* نموذج التعديل */
-                    <div className="space-y-4">
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <div>
-                          <label className="text-xs font-bold text-gray-600">العنوان</label>
-                          <input
-                            type="text"
-                            value={editForm.title || ''}
-                            onChange={(e) =>
-                              setEditForm({ ...editForm, title: e.target.value })
-                            }
-                            className="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm outline-none focus:border-[#c5a059]"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs font-bold text-gray-600">التصنيف</label>
-                          <select
-                            value={editForm.category || CATEGORIES[0]}
-                            onChange={(e) =>
-                              setEditForm({ ...editForm, category: e.target.value })
-                            }
-                            className="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm outline-none focus:border-[#c5a059]"
-                          >
-                            {CATEGORIES.map((cat) => (
-                              <option key={cat} value={cat}>
-                                {cat}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-
-                      {/* تغيير الصورة أثناء التعديل */}
-                      <div>
-                        <label className="text-xs font-bold text-gray-600">تغيير الصورة</label>
-                        <div className="mt-2 flex items-center gap-3">
-                          <div className="relative h-16 w-24 overflow-hidden rounded-lg bg-gray-100 ring-1 ring-gray-300">
-                            <Image
-                              src={editForm.image || project.image}
-                              alt="معاينة"
-                              fill
-                              className="object-cover"
-                            />
+        {/* الجدول */}
+        <section className="mt-6">
+          {isLoadingData ? (
+            <div className="flex h-64 items-center justify-center rounded-3xl bg-white ring-1 ring-gray-200/70">
+              <Loader2 className="h-8 w-8 animate-spin text-[#c5a059]" />
+            </div>
+          ) : filteredProjects.length > 0 ? (
+            <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-200/70">
+              <div className="overflow-x-auto">
+                <table className="w-full text-right text-sm">
+                  <thead className="border-b border-gray-100 bg-gray-50/75 text-xs font-bold text-gray-500">
+                    <tr>
+                      <th className="py-4 px-6">المشروع</th>
+                      <th className="py-4 px-6">التصنيف</th>
+                      <th className="py-4 px-6">الموقع / المساحة</th>
+                      <th className="py-4 px-6">الحالة</th>
+                      <th className="py-4 px-6 text-center">الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {filteredProjects.map((project) => (
+                      <tr key={project.id} className="transition hover:bg-gray-50/50">
+                        <td className="py-4 px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                              <Image
+                                src={project.image}
+                                alt={project.title}
+                                fill
+                                sizes="56px"
+                                className="object-cover"
+                              />
+                            </div>
+                            <div>
+                              <p className="font-bold text-[#1a233a]">{project.title}</p>
+                              <span className="text-xs text-gray-400">
+                                {project.completionYear ? `سنة ${project.completionYear}` : '—'}
+                              </span>
+                            </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => setShowEditGalleryModal(true)}
-                            className="rounded-lg bg-gray-100 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-200"
-                          >
-                            اختر من المعرض
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => editFileInputRef.current?.click()}
-                            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-bold text-gray-700 hover:bg-gray-50"
-                          >
-                            رفع صورة
-                          </button>
-                          <input
-                            ref={editFileInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => handleFileUpload(e, true)}
-                          />
-                        </div>
-                      </div>
+                        </td>
 
-                      <div>
-                        <label className="text-xs font-bold text-gray-600">الوصف</label>
-                        <textarea
-                          rows={2}
-                          value={editForm.description || ''}
-                          onChange={(e) =>
-                            setEditForm({ ...editForm, description: e.target.value })
-                          }
-                          className="mt-1 w-full rounded-lg border border-gray-200 p-2 text-sm outline-none focus:border-[#c5a059]"
-                        />
-                      </div>
+                        <td className="py-4 px-6">
+                          <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">
+                            {project.category}
+                          </span>
+                        </td>
 
-                      <div className="flex gap-2 pt-2">
-                        <button
-                          onClick={() => saveEdit(project.id)}
-                          className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700"
-                        >
-                          <Check className="h-4 w-4" /> حفظ التعديل
-                        </button>
-                        <button
-                          onClick={() => setEditingId(null)}
-                          className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-4 py-2 text-xs font-bold text-gray-700 hover:bg-gray-200"
-                        >
-                          <X className="h-4 w-4" /> إلغاء
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    /* العرض الافتراضي للبطاقة */
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-center gap-4">
-                        {/* صورة مصغرة للمشروع */}
-                        <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-gray-100 shadow-sm ring-1 ring-gray-200">
-                          <Image
-                            src={project.image}
-                            alt={project.title}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-bold text-[#1a233a]">{project.title}</h3>
-                            <span className="rounded-md bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
-                              {project.category}
+                        <td className="py-4 px-6 text-xs text-gray-600">
+                          <div>{project.location}</div>
+                          <div className="text-gray-400">{project.area || '—'}</div>
+                        </td>
+
+                        <td className="py-4 px-6">
+                          {project.status === 'ongoing' ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700">
+                              <Clock className="h-3 w-3" />
+                              قيد التنفيذ
                             </span>
-                          </div>
-                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-gray-500">
-                            {project.description}
-                          </p>
-                        </div>
-                      </div>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                              <CheckCircle2 className="h-3 w-3" />
+                              مكتمل
+                            </span>
+                          )}
+                        </td>
 
-                      <div className="flex items-center gap-2 self-end sm:self-center">
+                        <td className="py-4 px-6 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            {/* زر التعديل */}
+                            <button
+                              onClick={() => {
+                                setEditingProject(project)
+                                setPreviewImage(project.image)
+                                setActionError(null)
+                                setIsModalOpen(true)
+                              }}
+                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition hover:bg-blue-600 hover:text-white"
+                              title="تعديل المشروع"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+
+                            <Link
+                              href={`/projects/${project.slug}`}
+                              target="_blank"
+                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 text-gray-600 transition hover:bg-[#1a233a] hover:text-[#c5a059]"
+                              title="عرض في الموقع"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Link>
+
+                            <button
+                              onClick={() => handleDelete(project.id, project.title)}
+                              disabled={deletingId === project.id}
+                              className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 transition hover:bg-red-600 hover:text-white disabled:opacity-50"
+                              title="حذف المشروع"
+                            >
+                              {deletingId === project.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-gray-300 bg-white p-12 text-center">
+              <FolderGit2 className="mx-auto h-12 w-12 text-gray-300" />
+              <h3 className="mt-3 text-base font-bold text-[#1a233a]">لا توجد مشاريع مطابقة</h3>
+            </div>
+          )}
+        </section>
+
+        {/* النافذة المنبثقة لإضافة أو تعديل مشروع */}
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute left-6 top-6 rounded-full bg-gray-100 p-2 text-gray-400 transition hover:text-[#1a233a]"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              <h2 className="text-xl font-extrabold text-[#1a233a]">
+                {editingProject ? 'تعديل بيانات المشروع' : 'إضافة مشروع جديد'}
+              </h2>
+              <p className="mt-1 text-xs text-gray-500">
+                {editingProject ? 'قم بتحديث التفاصيل وسيحفظ التغيير فوراً' : 'أدخل تفاصيل المشروع الجديد'}
+              </p>
+
+              {actionError && (
+                <div className="mt-4 flex items-center gap-2 rounded-2xl bg-red-50 p-3.5 text-xs font-bold text-red-600">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{actionError}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmitProject} className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700">عنوان المشروع *</label>
+                  <input
+                    name="title"
+                    type="text"
+                    required
+                    defaultValue={editingProject?.title || ''}
+                    placeholder="مثال: تركيب مستودع سندوتش بانل عازل"
+                    className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                  />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700">التصنيف *</label>
+                    <select
+                      name="category"
+                      required
+                      defaultValue={editingProject?.category || 'سندوتش بانل ومستودعات'}
+                      className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                    >
+                      <option value="سندوتش بانل ومستودعات">سندوتش بانل ومستودعات</option>
+                      <option value="مظلات وسواتر">مظلات وسواتر</option>
+                      <option value="بناء عام وترميم">بناء عام وترميم</option>
+                      <option value="هياكل إنشائية وديكورات">هياكل إنشائية وديكورات</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700">المدينة / الموقع *</label>
+                    <input
+                      name="location"
+                      type="text"
+                      required
+                      defaultValue={editingProject?.location || 'جدة'}
+                      className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700">المساحة</label>
+                    <input
+                      name="area"
+                      type="text"
+                      defaultValue={editingProject?.area || ''}
+                      placeholder="مثال: 1,500 م²"
+                      className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700">سنة التنفيذ</label>
+                    <input
+                      name="completionYear"
+                      type="text"
+                      defaultValue={editingProject?.completionYear || new Date().getFullYear().toString()}
+                      className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700">حالة المشروع</label>
+                    <select
+                      name="status"
+                      defaultValue={editingProject?.status || 'completed'}
+                      className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                    >
+                      <option value="completed">مكتمل ومسلّم</option>
+                      <option value="ongoing">قيد التنفيذ</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700">وصف المشروع *</label>
+                  <textarea
+                    name="description"
+                    rows={3}
+                    required
+                    defaultValue={editingProject?.description || ''}
+                    placeholder="اكتب نبذة هندسية..."
+                    className="mt-1.5 w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                  />
+                </div>
+
+                {/* صورة المشروع */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-700">
+                    صورة المشروع {editingProject ? '(اختياري للاستبدال)' : '*'}
+                  </label>
+                  <div className="mt-1.5 flex items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 p-4 transition hover:border-[#c5a059]">
+                    {previewImage ? (
+                      <div className="relative h-40 w-full overflow-hidden rounded-xl">
+                        <Image
+                          src={previewImage}
+                          alt="معاينة"
+                          fill
+                          className="object-cover"
+                        />
                         <button
-                          onClick={() => startEditing(project)}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-[#c5a059]/30 bg-[#c5a059]/10 px-3.5 py-2 text-xs font-bold text-[#c5a059] transition hover:bg-[#c5a059] hover:text-[#1a233a]"
+                          type="button"
+                          onClick={() => setPreviewImage(null)}
+                          className="absolute left-2 top-2 rounded-full bg-red-600 p-1.5 text-white"
                         >
-                          <Edit3 className="h-3.5 w-3.5" />
-                          تعديل
+                          <X className="h-4 w-4" />
                         </button>
-                        <button
-                          onClick={() => {
-                            if (confirm(`هل أنت متأكد من حذف مشروع "${project.title}"؟`)) {
-                              deleteProject(project.id)
+                      </div>
+                    ) : (
+                      <label className="flex cursor-pointer flex-col items-center gap-2 text-center text-xs text-gray-500">
+                        <Upload className="h-8 w-8 text-[#c5a059]" />
+                        <span className="font-bold text-[#1a233a]">اضغط هنا لاختيار صورة بديلة</span>
+                        <input
+                          name="image"
+                          type="file"
+                          accept="image/*"
+                          required={!editingProject}
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0]
+                            if (file) {
+                              setPreviewImage(URL.createObjectURL(file))
                             }
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-bold text-red-600 transition hover:bg-red-600 hover:text-white"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          حذف
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                        />
+                      </label>
+                    )}
+                  </div>
                 </div>
-              )
-            })}
-          </div>
-        </section>
 
+                <div className="mt-6 flex items-center justify-end gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="rounded-xl px-5 py-3 text-xs font-bold text-gray-600 transition hover:bg-gray-100"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="flex items-center gap-2 rounded-xl bg-[#1a233a] px-6 py-3 text-xs font-bold text-[#c5a059] shadow-md transition hover:bg-[#253252] disabled:opacity-50"
+                  >
+                    {isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>جاري الحفظ...</span>
+                      </>
+                    ) : (
+                      <span>{editingProject ? 'حفظ التعديلات' : 'حفظ ونشر المشروع'}</span>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* نافذة اختيار الصورة من المعرض (لإضافة مشروع جديد) */}
-      {showGalleryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-              <h3 className="flex items-center gap-2 font-bold text-[#1a233a]">
-                <ImageIcon className="h-5 w-5 text-[#c5a059]" />
-                اختر صورة من معرض المشروع
-              </h3>
-              <button
-                onClick={() => setShowGalleryModal(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {PRESET_GALLERY.map((item) => (
-                <button
-                  key={item.src}
-                  type="button"
-                  onClick={() => {
-                    setSelectedImage(item.src)
-                    setShowGalleryModal(false)
-                  }}
-                  className={`group relative flex flex-col overflow-hidden rounded-xl border-2 p-1.5 text-right transition ${
-                    selectedImage === item.src
-                      ? 'border-[#c5a059] bg-[#c5a059]/5'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                    <Image
-                      src={item.src}
-                      alt={item.label}
-                      fill
-                      className="object-cover transition group-hover:scale-105"
-                    />
-                  </div>
-                  <span className="mt-2 text-xs font-bold text-gray-700">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* نافذة اختيار الصورة من المعرض (أثناء التعديل) */}
-      {showEditGalleryModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-              <h3 className="font-bold text-[#1a233a]">تغيير صورة المشروع من المعرض</h3>
-              <button
-                onClick={() => setShowEditGalleryModal(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {PRESET_GALLERY.map((item) => (
-                <button
-                  key={item.src}
-                  type="button"
-                  onClick={() => {
-                    setEditForm((prev) => ({ ...prev, image: item.src }))
-                    setShowEditGalleryModal(false)
-                  }}
-                  className="group relative flex flex-col overflow-hidden rounded-xl border-2 border-gray-200 p-1.5 text-right transition hover:border-[#c5a059]"
-                >
-                  <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-                    <Image
-                      src={item.src}
-                      alt={item.label}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="mt-2 text-xs font-bold text-gray-700">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   )
 }

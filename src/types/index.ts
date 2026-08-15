@@ -1,5 +1,6 @@
-import type { LucideIcon } from 'lucide-react'
+import { LucideIcon } from 'lucide-react'
 
+// بيانات إعدادات الموقع
 export interface SocialLink {
   name: string
   url: string
@@ -10,14 +11,17 @@ export interface SiteConfig {
   companyNameEn: string
   description: string
   phone: string
-  whatsapp: string
+  whatsappUrl: string
   email: string
+  mainCity: string
   address: string
+  serviceAreas: string[]
   workingHours: string
   domain: string
   social: SocialLink[]
 }
 
+// واجهة بيانات الخدمات
 export interface Service {
   id: string
   slug: string
@@ -28,6 +32,7 @@ export interface Service {
   features: string[]
 }
 
+// واجهة بيانات المقالات
 export interface Article {
   id: string
   slug: string
@@ -38,10 +43,37 @@ export interface Article {
   readTime: string
 }
 
+// واجهة بيانات المشاريع
 export interface ProjectItem {
   id: string
+  slug: string
   title: string
   category: string
-  image: string
+  location: string
   description: string
+  image: string
+  status?: 'completed' | 'ongoing'
+  area?: string
+  completionYear?: string
+  materials?: string[]
+  gallery?: string[]
+  features?: string[]
+  createdAt?: string
+  updatedAt?: string
+}
+
+// واجهة مدخلات إضافة/تعديل المشاريع
+export interface ProjectInput {
+  title: string
+  slug?: string
+  category: string
+  location: string
+  description: string
+  image: string
+  status?: 'completed' | 'ongoing'
+  area?: string
+  completionYear?: string
+  materials?: string[]
+  gallery?: string[]
+  features?: string[]
 }

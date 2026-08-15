@@ -1,4 +1,4 @@
-type LogLevel = 'info' | 'warn' | 'error'
+type LogLevel = 'info' | 'warn' | 'error' | 'debug'
 
 class AppLogger {
   private formatMessage(level: LogLevel, message: string): string {
@@ -6,19 +6,54 @@ class AppLogger {
     return `[${timestamp}] [${level.toUpperCase()}]: ${message}`
   }
 
+  private print(
+    method: 'info' | 'warn' | 'error' | 'debug',
+    level: LogLevel,
+    message: string,
+    extra?: unknown
+  ): void {
+    const formatted = this.formatMessage(level, message)
+    if (extra !== undefined) {
+      console[method](formatted, extra)
+    } else {
+      console[method](formatted)
+    }
+  }
+
+  debug(message: string, context?: unknown): void {
+    if (process.env.NODE_ENV === 'development') {
+      this.print('debug', 'debug', message, context)
+    }
+  }
+
   info(message: string, context?: unknown): void {
     if (process.env.NODE_ENV !== 'production') {
-      console.info(this.formatMessage('info', message), context ?? '')
+      this.print('info', 'info', message, context)
     }
   }
 
   warn(message: string, context?: unknown): void {
-    console.warn(this.formatMessage('warn', message), context ?? '')
+    this.print('warn', 'warn', message, context)
   }
 
   error(message: string, error?: unknown): void {
-    console.error(this.formatMessage('error', message), error ?? '')
-    // جاهز للربط مستقبلاً مع خدمات المراقبة السحابية (مثل Sentry)
+    let errorDetails = error
+
+    // استخراج معلومات الخطأ التفصيلية إذا كان Error Object
+    if (error instanceof Error) {
+      errorDetails = {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      }
+    }
+
+    this.print('error', 'error', message, errorDetails)
+
+    // نقطة تكامل مستقبلية لخدمات تتبع الأخطاء السحابية (مثل Sentry أو Logflare):
+    // if (process.env.NODE_ENV === 'production') {
+    //   Sentry.captureException(error || new Error(message))
+    // }
   }
 }
 

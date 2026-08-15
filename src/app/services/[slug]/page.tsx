@@ -1,3 +1,4 @@
+import React from 'react'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -9,6 +10,7 @@ import {
   ArrowRight,
   ChevronLeft,
   FileText,
+  ShieldCheck,
 } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { services, getServiceBySlug } from '@/data/siteData'
@@ -30,19 +32,33 @@ export async function generateMetadata({
 
   if (!service) {
     return {
-      title: 'الخدمة غير موجودة | المحور الهندسي للمقاولات',
+      title: `الخدمة غير موجودة | ${siteConfig.companyName}`,
     }
   }
 
+  const title = `${service.title} | ${siteConfig.companyName}`
+  const description = service.shortDescription
+  const pageUrl = `${siteConfig.domain}/services/${service.slug}`
+
   return {
-    title: `${service.title} | ${siteConfig.companyName}`,
-    description: service.shortDescription,
-    keywords: [service.title, 'مقاولات', siteConfig.companyName],
+    title,
+    description,
+    keywords: [service.title, 'مقاولات عامة', 'إنشاءات هندسية', siteConfig.companyName, 'جدة'],
+    alternates: {
+      canonical: pageUrl,
+    },
     openGraph: {
-      title: `${service.title} | ${siteConfig.companyName}`,
-      description: service.shortDescription,
+      title,
+      description,
+      url: pageUrl,
       locale: 'ar_SA',
       type: 'website',
+      siteName: siteConfig.companyName,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
     },
   }
 }
@@ -58,37 +74,96 @@ export default async function ServicePage({ params }: ServicePageProps) {
   const Icon = service.icon
 
   const whatsappUrl = `${siteConfig.whatsapp}?text=${encodeURIComponent(
-    `أرغب في الاستفسار عن خدمة ${service.title} والحصول على عرض سعر مناسب.`,
+    `السلام عليكم، أرغب في الاستفسار عن خدمة ${service.title} وطلب معاينة هندسية وعرض سعر.`,
   )}`
 
+  // بيانات Schema.org المهيكلة لتحسين ظهور الصفحة في نتائج بحث Google
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'الرئيسية',
+            item: siteConfig.domain,
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'الخدمات',
+            item: `${siteConfig.domain}/services`,
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: service.title,
+            item: `${siteConfig.domain}/services/${service.slug}`,
+          },
+        ],
+      },
+      {
+        '@type': 'Service',
+        name: service.title,
+        description: service.shortDescription,
+        provider: {
+          '@type': 'HomeAndConstructionBusiness',
+          name: siteConfig.companyName,
+          telephone: siteConfig.phone,
+          url: siteConfig.domain,
+          address: {
+            '@type': 'PostalAddress',
+            streetAddress: siteConfig.address,
+            addressLocality: siteConfig.mainCity,
+            addressCountry: 'SA',
+          },
+        },
+        areaServed: {
+          '@type': 'Country',
+          name: 'المملكة العربية السعودية',
+        },
+      },
+    ],
+  }
+
   return (
-    <main dir="rtl" className="overflow-x-hidden">
-      <section className="bg-[#1a233a]">
-        <div className="mx-auto max-w-7xl px-4 py-14">
+    <main dir="rtl" className="min-h-screen overflow-x-hidden bg-[#f8fafc]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {/* قسم الهيدر والمسار التوجيهي */}
+      <section className="bg-[#1a233a] py-12 lg:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <nav
             aria-label="مسار التنقل"
-            className="mb-6 flex items-center gap-2 text-sm text-gray-400"
+            className="mb-8 flex items-center gap-2 text-xs font-semibold text-gray-400"
           >
             <Link href="/" className="transition hover:text-[#c5a059]">
               الرئيسية
             </Link>
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5" />
             <Link href="/services" className="transition hover:text-[#c5a059]">
-              خدماتنا
+              الخدمات
             </Link>
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-3.5 w-3.5" />
             <span className="text-[#c5a059]">{service.title}</span>
           </nav>
 
           <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#c5a059] text-[#1a233a] shadow-lg shadow-[#c5a059]/30">
-              <Icon className="h-10 w-10" />
-            </div>
+            {Icon && (
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#c5a059] to-[#d9b87a] text-[#1a233a] shadow-lg shadow-[#c5a059]/20">
+                <Icon className="h-10 w-10" />
+              </div>
+            )}
             <div>
-              <h1 className="text-3xl font-extrabold text-white sm:text-4xl">
+              <h1 className="text-2xl font-extrabold text-white sm:text-3xl lg:text-4xl">
                 {service.title}
               </h1>
-              <p className="mt-3 max-w-2xl leading-8 text-gray-300">
+              <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-300 sm:text-base">
                 {service.shortDescription}
               </p>
             </div>
@@ -96,50 +171,61 @@ export default async function ServicePage({ params }: ServicePageProps) {
         </div>
       </section>
 
-      <section className="bg-[#f5f7fa] py-14">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-3">
-          <div className="lg:col-span-2">
-            <article className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
-              <h2 className="text-2xl font-extrabold text-[#1a233a]">
-                نبذة عن خدمة {service.title}
+      {/* قسم المحتوى الأساسي والنموذج الجانبي */}
+      <section className="py-12 lg:py-16">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
+          {/* العمود الرئيسي لتفاصيل الخدمة */}
+          <div className="space-y-8 lg:col-span-8">
+            <article className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70 sm:p-8">
+              <h2 className="text-xl font-bold text-[#1a233a] sm:text-2xl">
+                نطاق وتفاصيل تنفيذ خدمة {service.title}
               </h2>
-              <div className="mt-4 h-1 w-20 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a]" />
-              <p className="mt-6 leading-8 text-gray-700">
+              <div className="mt-3 h-1 w-20 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a]" />
+              <p className="mt-6 text-sm leading-8 text-gray-700 whitespace-pre-line sm:text-base">
                 {service.fullDescription}
               </p>
 
-              <h3 className="mt-10 text-xl font-extrabold text-[#1a233a]">
-                مميزات تنفيذ الخدمة لدى {siteConfig.companyName}
-              </h3>
-              <div className="mt-4 h-1 w-16 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a]" />
-              <ul className="mt-6 space-y-4">
-                {service.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#c5a059]" />
-                    <span className="leading-7 text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              {service.features && service.features.length > 0 && (
+                <div className="mt-10 border-t border-gray-100 pt-8">
+                  <h3 className="flex items-center gap-2 text-lg font-bold text-[#1a233a]">
+                    <ShieldCheck className="h-5 w-5 text-[#c5a059]" />
+                    معايير الجودة والمميزات الهندسية
+                  </h3>
+                  <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+                    {service.features.map((feature, idx) => (
+                      <li
+                        key={idx}
+                        className="flex items-start gap-3 rounded-2xl bg-gray-50 p-4 text-xs font-semibold text-gray-700 sm:text-sm"
+                      >
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#c5a059]" />
+                        <span className="leading-6">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </article>
 
-            <div className="mt-10 rounded-2xl bg-[#1a233a] p-8">
-              <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+            {/* بطاقة الخدمات ذات الصلة */}
+            <div className="rounded-3xl bg-[#1a233a] p-6 text-white shadow-xl sm:p-8">
+              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h3 className="text-xl font-extrabold text-white">
-                    خدماتنا الأخرى
+                  <h3 className="text-lg font-bold text-[#c5a059]">
+                    خدمات هندسية وإنشائية أخرى
                   </h3>
-                  <p className="mt-2 text-sm text-gray-400">
-                    استكشف باقي خدماتنا المنفذة بنفس المعايير والجودة.
+                  <p className="mt-1 text-xs text-gray-300 sm:text-sm">
+                    استكشف بقية خدماتنا المنفذة وفق أعلى المواصفات الفنية المعتمدة.
                   </p>
                 </div>
                 <Link
                   href="/services"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#c5a059] px-6 py-3 font-bold text-[#1a233a] transition duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-5 py-2.5 text-xs font-bold text-[#1a233a] transition hover:brightness-105"
                 >
-                  جميع الخدمات
+                  <span>كافة الخدمات</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
+
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 {services
                   .filter((item) => item.id !== service.id)
@@ -147,10 +233,12 @@ export default async function ServicePage({ params }: ServicePageProps) {
                     <Link
                       key={item.id}
                       href={`/services/${item.slug}`}
-                      className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-[#c5a059]/50 hover:bg-white/10"
+                      className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-[#c5a059]/50 hover:bg-white/10"
                     >
-                      <item.icon className="h-5 w-5 shrink-0 text-[#c5a059]" />
-                      <span className="text-sm font-medium text-gray-200 transition group-hover:text-white">
+                      {item.icon && (
+                        <item.icon className="h-5 w-5 shrink-0 text-[#c5a059] transition group-hover:scale-110" />
+                      )}
+                      <span className="text-xs font-medium text-gray-200 transition group-hover:text-white sm:text-sm">
                         {item.title}
                       </span>
                     </Link>
@@ -159,28 +247,31 @@ export default async function ServicePage({ params }: ServicePageProps) {
             </div>
           </div>
 
-          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25d366]/15 text-[#25d366]">
+          {/* العمود الجانبي: الاستفسار ونموذج عرض السعر */}
+          <aside className="space-y-6 lg:col-span-4 lg:sticky lg:top-24 lg:self-start">
+            {/* بطاقة الاتصال والواتساب السريع */}
+            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                 <MessageCircle className="h-6 w-6" />
               </div>
-              <h3 className="mt-4 text-lg font-bold text-[#1a233a]">
-                استفسار سريع
+              <h3 className="mt-4 text-base font-bold text-[#1a233a]">
+                استشارة ومعاينة ميدانية
               </h3>
-              <p className="mt-2 text-sm leading-7 text-gray-600">
-                تواصل مباشرة مع فريقنا للاستفسار عن خدمة {service.title} أو طلب
-                عرض سعر مجاني.
+              <p className="mt-2 text-xs leading-6 text-gray-600 sm:text-sm">
+                تواصل مع الفريق الهندسي لمناقشة متطلبات مشروعك والحصول على تسعير فوري.
               </p>
+
               <a
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#25d366] px-6 py-3.5 font-bold text-white shadow-lg shadow-[#25d366]/30 transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-98"
               >
-                <MessageCircle className="h-5 w-5" />
-                واتساب مباشر
+                <MessageCircle className="h-4 w-4" />
+                <span>واتساب مباشر</span>
               </a>
-              <div className="mt-5 space-y-3 border-t border-gray-100 pt-5 text-sm">
+
+              <div className="mt-5 space-y-3 border-t border-gray-100 pt-5 text-xs sm:text-sm">
                 <a
                   href={`tel:${siteConfig.phone}`}
                   className="flex items-center gap-3 text-gray-600 transition hover:text-[#c5a059]"
@@ -198,13 +289,14 @@ export default async function ServicePage({ params }: ServicePageProps) {
               </div>
             </div>
 
-            <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-[#1a233a]">
+            {/* بطاقة نموذج طلب عرض السعر */}
+            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70">
+              <h3 className="flex items-center gap-2 text-base font-bold text-[#1a233a]">
                 <FileText className="h-5 w-5 text-[#c5a059]" />
-                اطلب عرض سعر
+                طلب عرض سعر رسمي
               </h3>
-              <p className="mt-2 text-sm leading-7 text-gray-600">
-                املأ النموذج وسيصلك عرض السعر عبر الواتساب في أقرب وقت.
+              <p className="mt-1 text-xs leading-6 text-gray-500">
+                املأ البيانات وسيتم التواصل معك خلال وقت قصير بعرض سعر تفصيلي.
               </p>
               <div className="mt-5">
                 <QuoteForm serviceName={service.title} />

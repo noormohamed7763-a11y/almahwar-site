@@ -29,13 +29,13 @@ export async function createSignedSessionToken(): Promise<string> {
   const payload = `admin:${Date.now()}`
   const encoder = new TextEncoder()
   const key = await getCryptoKey(secret)
-  
+
   const signatureBuffer = await crypto.subtle.sign(
     'HMAC',
     key,
     encoder.encode(payload)
   )
-  
+
   const signatureHex = Array.from(new Uint8Array(signatureBuffer))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
@@ -45,12 +45,25 @@ export async function createSignedSessionToken(): Promise<string> {
 
 /**
  * التحقق من صحة التوقيع وصلاحية الجلسة
+ * تقبل التوكن كمعامل (لـ Middleware) أو تجلبه تلقائياً من الكوكيز (لـ Route Handlers)
  */
 export async function verifySessionToken(token?: string): Promise<boolean> {
-  if (!token || !token.includes('.')) return false
+  let tokenToVerify = token
+
+  // إذا لم يُمرر التوكن، نحاول قراءته تلقائياً من cookies()
+  if (!tokenToVerify) {
+    try {
+      const cookieStore = await cookies()
+      tokenToVerify = cookieStore.get(AUTH_COOKIE_NAME)?.value
+    } catch {
+      return false
+    }
+  }
+
+  if (!tokenToVerify || !tokenToVerify.includes('.')) return false
 
   try {
-    const [payload, signatureHex] = token.split('.')
+    const [payload, signatureHex] = tokenToVerify.split('.')
     if (!payload || !signatureHex) return false
 
     // فحص مدة صلاحية الجلسة (24 ساعة)

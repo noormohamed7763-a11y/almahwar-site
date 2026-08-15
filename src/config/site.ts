@@ -1,13 +1,14 @@
-import { SiteConfig } from '@/types'
-
-export const siteConfig: SiteConfig = {
-  companyName: 'المحور الهندسي للمقاولات',
-  companyNameEn: 'AlMahwar Engineering for Contracting',
-  description: 'تنفيذ أعمال السندوتش بانل، المظلات، السواتر، الترميم، البناء العام، والدهانات والديكورات بأعلى معايير الجودة والالتزام بالمواعيد في جميع أنحاء المملكة.',
-  phone: '0562050150', // 👈 تأكد من إكمال الرقم الصحيح المكون من 10 خانات
-  whatsapp: 'https://wa.me/966562050150', // 👈 نفس الرقم بالصيغة الدولية
+export const siteConfig = {
+  companyName: 'المحور الهندسي للمقاولات العامة',
+  companyNameEn: 'AlMahwar Engineering for General Contracting',
+  description: 'تنفيذ أعمال الساندوتش بانل، المظلات، السواتر، الترميم، البناء العام، والدهانات والديكورات بأعلى معايير الجودة والالتزام بالمواعيد في المملكة العربية السعودية.',
+  phone: '0565205015',
+  whatsapp: 'https://wa.me/966565205015',
+  whatsappUrl: 'https://wa.me/966565205015',
   email: 'almhwr.alhndsy@gmail.com',
-  address: 'المقر الرئيسي: جدة | الفروع: مكة المكرمة، الرياض، المدينة المنورة',
+  mainCity: 'جدة',
+  address: 'المملكة العربية السعودية - المقر الرئيسي: جدة',
+  serviceAreas: ['جدة', 'مكة المكرمة', 'الرياض', 'المدينة المنورة'],
   workingHours: 'السبت - الخميس: 8:00 صباحاً - 10:00 مساءً',
   domain: process.env.NEXT_PUBLIC_SITE_URL || 'https://almahware.com',
   social: [],

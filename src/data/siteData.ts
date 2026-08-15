@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { Service, Article, ProjectItem } from '@/types'
 
-// إعادة تصدير إعدادات الموقع كأمان إضافي للتوافق
+// إعادة تصدير إعدادات الموقع لضمان التوافق المركزي
 export { siteConfig } from '@/config/site'
 
 export const services: Service[] = [
@@ -174,34 +174,88 @@ export const articles: Article[] = [
 export const defaultProjects: ProjectItem[] = [
   {
     id: 'p-1',
+    slug: 'sandwich-panel-warehouse-jeddah',
     title: 'مستودع سندوتش بانل متكامل',
     category: 'سندوتش بانل ومستودعات',
+    location: 'جدة - الخمرة الصناعية',
+    area: '1,200 م²',
+    completionYear: '2026',
     image: '/images/hero/sandwich-panel-1.jpg',
     description:
-      'تنفيذ وتوريد مستودع كامل بألواح سندوتش بانل عازلة للحرارة مع شبكة تصريف ومواصفات دفاع مدني.',
+      'تنفيذ وتوريد مستودع كامل بألواح سندوتش بانل عازلة للحرارة مع شبكة تصريف ومواصفات مطابقة لاشتراطات الدفاع المدني وكود البناء السعودي.',
+    materials: [
+      'ألواح PIR عازلة سماكة 7.5 سم',
+      'هياكل حديدية معالجة ضد الصدأ',
+      'أبواب صناعية هيدروليكية',
+      'أنظمة تصريف مياه الأمطار',
+    ],
+    features: [
+      'مطابق لاشتراطات الدفاع المدني وكود البناء السعودي',
+      'عزل حراري وصوتي عالي الكفاءة',
+      'ضمان شامل على التركيب والتسريب',
+    ],
+    status: 'completed',
+    createdAt: '2026-08-01T10:00:00.000Z',
+    updatedAt: '2026-08-15T12:00:00.000Z',
   },
   {
     id: 'p-2',
+    slug: 'commercial-car-park-canopies',
     title: 'مظلات مواقف سيارات كبرى',
     category: 'مظلات وسواتر',
+    location: 'مكة المكرمة',
+    area: '850 م²',
+    completionYear: '2026',
     image: '/images/hero/canopy-1.jpg',
     description:
-      'تصميم وتنفيذ مظلات قماشية وهياكل حديدية مجلفنة لمواقف سيارات مجمع تجاري.',
+      'تصميم وتنفيذ مظلات قماشية وهياكل حديدية مجلفنة لمواقف سيارات مجمع تجاري مع مقاومة عالية للرياح والحرارة.',
+    materials: [
+      'قماش PVC كوري وزن 1100 جرام عالي الكثافة',
+      'مواسير وإطارات فولاذية مجلفنة ومدهونة حرارياً',
+      'قواعد خرسانية مسلحة مطابقة للمواصفات',
+    ],
+    features: [
+      'حجب تام للأشعة فوق البنفسجية بنسبة 100%',
+      'مقاومة للرياح والتقلبات الجوية الشديدة',
+      'ضمان لمدة 10 سنوات على القماش والهيكل',
+    ],
+    status: 'completed',
+    createdAt: '2026-08-05T09:00:00.000Z',
+    updatedAt: '2026-08-15T12:00:00.000Z',
   },
   {
     id: 'p-3',
+    slug: 'commercial-building-renovation-facades',
     title: 'ترميم وتأهيل واجهات مبنى تجاري',
     category: 'بناء عام وترميم',
+    location: 'الرياض',
+    area: '2,400 م²',
+    completionYear: '2026',
     image: '/images/hero/sandwich-panel-2.jpg',
     description:
-      'معالجة التصدعات والتشققات وتطبيق دهانات خارجية مقاومة للرطوبة والحرارة.',
+      'معالجة التصدعات والتشققات وتطبيق دهانات خارجية مقاومة للرطوبة والحرارة مع تجديد المظهر المعماري بالكامل.',
+    materials: [
+      'مواد حقن وتدعيم إيبوكسية ألمانية',
+      'دهانات بروفايل خارجية مقاومة للعوامل الجوية',
+      'عوازل مائية وحرارية للواجهات والأسطح',
+    ],
+    features: [
+      'معالجة جذرية للشروخ الهيكلية والسطحية',
+      'إشراف هندسي ميداني على كافة مراحل الترميم',
+      'شهادة ضمان معتمدة على أعمال العزل والدهان',
+    ],
+    status: 'completed',
+    createdAt: '2026-08-10T08:30:00.000Z',
+    updatedAt: '2026-08-15T12:00:00.000Z',
   },
 ]
 
 export function getServiceBySlug(slug: string): Service | undefined {
-  return services.find((service) => service.slug === slug)
+  const decoded = decodeURIComponent(slug)
+  return services.find((service) => service.slug === decoded || service.slug === slug)
 }
 
 export function getArticleBySlug(slug: string): Article | undefined {
-  return articles.find((article) => article.slug === slug)
+  const decoded = decodeURIComponent(slug)
+  return articles.find((article) => article.slug === decoded || article.slug === slug)
 }

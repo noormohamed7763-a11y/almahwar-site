@@ -1,101 +1,64 @@
-'use client'
+import React from 'react'
+import { projectRepository } from '@/lib/projectsRepository'
+import ProjectCard from '@/components/ProjectCard'
+import { siteConfig } from '@/config/site'
 
-import React, { useState } from 'react'
-import Image from 'next/image'
-import { useProjects } from '@/context/ProjectsContext'
-import { PROJECT_CATEGORIES } from '@/config/site'
-import SectionHeading from '@/components/ui/SectionHeading'
-import LoadingState from '@/components/ui/LoadingState'
-import EmptyState from '@/components/ui/EmptyState'
+// ضمان جلب أحدث البيانات من قاعدة البيانات عند كل زيارة
+export const dynamic = 'force-dynamic'
 
-export default function ProjectsPage() {
-  const { projects, isLoading } = useProjects()
-  const [activeCategory, setActiveCategory] = useState<string>('الكل')
+export const metadata = {
+  title: `معرض المشاريع والأعمال المنجزة | ${siteConfig.companyName}`,
+  description:
+    'استعرض سابقة أعمالنا في مشاريع الساندوتش بانل، المظلات، السواتر، وأعمال البناء والترميم في مختلف مناطق المملكة مع إمكانية طلب مشروع مماثل فوراً.',
+}
 
-  const filteredProjects =
-    activeCategory === 'الكل'
-      ? projects
-      : projects.filter((item) => item.category === activeCategory)
+export default async function ProjectsPage() {
+  const projects = await projectRepository.getAll()
 
   return (
-    <main className="min-h-screen bg-[#f5f7fa] py-16 sm:py-20">
+    <main className="min-h-screen bg-[#f8fafc] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
-        <SectionHeading
-          eyebrow="معرض الأعمال"
-          title="مشاريع نفتخر بإنجازها"
-          description="استعرض أحدث المشاريع التي نفذتها شركة المحور الهندسي بأعلى معايير الدقة والجودة."
-        />
-
-        {/* أزرار الفلترة والتصنيفات */}
-        <div className="mb-12 flex flex-wrap items-center justify-center gap-2">
-          {PROJECT_CATEGORIES.map((category) => (
-            <button
-              key={category}
-              type="button"
-              onClick={() => setActiveCategory(category)}
-              className={`rounded-full px-5 py-2 text-sm font-bold transition-all duration-300 ${
-                activeCategory === category
-                  ? 'bg-[#1a233a] text-[#c5a059] shadow-lg shadow-[#1a233a]/10 scale-105'
-                  : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-[#1a233a]'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="mx-auto mb-14 max-w-3xl text-center">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">
+            سابقة الأعمال الهندسية
+          </span>
+          <h1 className="mt-2 text-3xl font-extrabold text-[#1a233a] sm:text-4xl">
+            المشاريع والمنتجات المنجزة
+          </h1>
+          <p className="mt-3 text-sm text-gray-600 sm:text-base">
+            تصفح أعمالنا الميدانية المنفذة بأعلى معايير الجودة، واطلب استشارة وعرض سعر لتنفيذ مشروع مماثل لموقعك مباشرة.
+          </p>
+          <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a]" />
         </div>
 
-        {/* مسار معالجة حالات البيانات */}
-        {isLoading ? (
-          <LoadingState count={6} />
-        ) : projects.length === 0 ? (
-          <EmptyState
-            title="لا توجد مشاريع مضافة حالياً"
-            description="نعمل حالياً على تحديث قائمة الأعمال والمشاريع المنجزة."
-            actionLabel="تواصل معنا للاستفسار"
-            actionHref="/contact"
-          />
-        ) : filteredProjects.length === 0 ? (
-          <EmptyState
-            title={`لا توجد مشاريع في قسم "${activeCategory}"`}
-            description="لم نقم بإضافة مشاريع ضمن هذا التصنيف حتى الآن."
-            onReset={() => setActiveCategory('الكل')}
-          />
-        ) : (
+        {projects.length > 0 ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredProjects.map((project) => (
-              <div
+            {projects.map((project, index) => (
+              <ProjectCard
                 key={project.id}
-                className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute right-3 top-3">
-                    <span className="rounded-full bg-[#1a233a]/80 px-3 py-1 text-xs font-bold text-[#c5a059] backdrop-blur-md">
-                      {project.category}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-lg font-bold text-[#1a233a] transition group-hover:text-[#c5a059]">
-                    {project.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    {project.description}
-                  </p>
-                </div>
-              </div>
+                project={project}
+                priority={index === 0}
+              />
             ))}
           </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-white py-20 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50 text-[#c5a059]">
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-[#1a233a]">لا توجد مشاريع معروضة حالياً</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              سيتم ظهور المشاريع هنا فور إضافتها واعتمادها من لوحة الإدارة.
+            </p>
+          </div>
         )}
-
       </div>
     </main>
   )
