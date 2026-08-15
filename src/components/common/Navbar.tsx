@@ -18,28 +18,33 @@ const navItems = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const cleanPhone = formatSaudiPhoneNumber(siteConfig.phone)
-  const directWhatsappUrl =
-    siteConfig.whatsapp || `https://wa.me/${cleanPhone}`
+  const directWhatsappUrl = siteConfig.whatsapp || `https://wa.me/${cleanPhone}`
 
   return (
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
       {/* الشريط العلوي للاتصال السريع */}
       <div className="bg-[#1a233a] text-gray-300">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-2.5 text-xs sm:text-sm">
-          <div className="flex items-center gap-6">
-            {/* أيقونة الاتصال الواضحة بجانب الرقم */}
+        <div className="flex w-full items-center justify-between px-0 py-2 sm:px-6 sm:text-sm lg:px-8">
+          <div className="flex items-center gap-2 sm:gap-6">
+            {/* أيقونة الاتصال - تم تكبيرها وتوضيحها */}
             <a
               href={`tel:${siteConfig.phone}`}
-              className="group flex items-center gap-2.5 transition"
+              className="group flex items-center gap-2 transition sm:gap-2"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#c5a059]/15 text-[#c5a059] transition group-hover:bg-[#c5a059] group-hover:text-[#1a233a]">
-                <Phone className="h-4 w-4" />
+              {/* خلفية الأيقونة - أكبر وأوضح */}
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#c5a059] text-white shadow-md shadow-[#c5a059]/30 transition group-hover:scale-105 group-hover:bg-[#d4b06a] sm:h-10 sm:w-10">
+                <Phone className="h-4 w-4 text-white sm:h-5 sm:w-5" />
               </div>
               <div className="flex flex-col text-right leading-tight">
-                <span className="text-xs font-black tracking-wide text-white" dir="ltr">
+                <span
+                  className="text-[10px] font-black tracking-wide text-white sm:text-xs"
+                  dir="ltr"
+                >
                   {siteConfig.phone}
                 </span>
-                <span className="text-[10px] text-gray-300">اتصال مباشر</span>
+                <span className="hidden text-[8px] text-gray-300 sm:block sm:text-[10px]">
+                  اتصال مباشر
+                </span>
               </div>
             </a>
 
@@ -48,7 +53,7 @@ export default function Navbar() {
               className="hidden items-center gap-2 transition hover:text-[#c5a059] sm:flex"
             >
               <Mail className="h-3.5 w-3.5 text-[#c5a059]" />
-              <span>{siteConfig.email}</span>
+              <span className="text-xs">{siteConfig.email}</span>
             </a>
           </div>
 
@@ -56,38 +61,38 @@ export default function Navbar() {
             href={directWhatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 font-bold text-[#c5a059] transition hover:text-white"
+            className="flex items-center gap-1 font-bold text-[#c5a059] transition hover:text-white sm:gap-1.5"
           >
-            <MessageCircle className="h-4 w-4" />
-            <span>واتساب مباشر</span>
+            <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">واتساب مباشر</span>
           </a>
         </div>
       </div>
 
       {/* الشريط الرئيسي والتنقل */}
       <div className="border-b border-gray-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="flex w-full items-center justify-between px-0 py-2 sm:px-6 lg:px-8">
           {/* الشعار */}
           <Link
             href="/"
-            className="group flex shrink-0 items-center gap-3"
+            className="group flex shrink-0 items-center gap-1.5 sm:gap-3"
             aria-label={siteConfig.companyName}
           >
-            <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]/60">
+            <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-0.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]/60 sm:h-12 sm:w-12 sm:p-1.5">
               <Image
                 src="/logo.png"
                 alt={siteConfig.companyName}
                 fill
                 priority
                 sizes="48px"
-                className="object-contain p-0.5 transition-transform duration-300 group-hover:scale-110"
+                className="object-contain p-0.5"
               />
             </div>
             <div className="flex flex-col text-right leading-tight">
-              <span className="text-sm sm:text-base font-black text-[#1a233a] transition-colors duration-200 group-hover:text-[#c5a059]">
+              <span className="text-[10px] font-black text-[#1a233a] transition-colors duration-200 group-hover:text-[#c5a059] sm:text-base">
                 {siteConfig.companyName}
               </span>
-              <span className="mt-0.5 text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-500 uppercase">
+              <span className="hidden text-[8px] font-bold tracking-wider uppercase text-gray-500 sm:mt-0.5 sm:block sm:text-[10px]">
                 {siteConfig.companyNameEn}
               </span>
             </div>
@@ -106,29 +111,25 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* زر طلب عرض سعر وزر القائمة للموبايل */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              href="/contact"
-              className="hidden rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-6 py-2.5 text-xs font-bold text-[#1a233a] shadow-md shadow-[#c5a059]/20 transition duration-300 hover:brightness-105 active:scale-95 lg:inline-flex"
-            >
-              طلب عرض سعر
-            </Link>
-
+          {/* زر القائمة للموبايل */}
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <button
               type="button"
               onClick={() => setIsOpen((prev) => !prev)}
-              aria-label={isOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-              className="rounded-xl border border-gray-200 p-2 text-[#1a233a] transition hover:border-[#c5a059] hover:text-[#c5a059] lg:hidden"
+              className="rounded-xl border border-gray-200 p-1.5 text-[#1a233a] transition hover:border-[#c5a059] hover:text-[#c5a059] sm:p-2 lg:hidden"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? (
+                <X className="h-4 w-4 sm:h-6 sm:w-6" />
+              ) : (
+                <Menu className="h-4 w-4 sm:h-6 sm:w-6" />
+              )}
             </button>
           </div>
         </div>
 
         {/* القائمة المنسدلة للجوال */}
         {isOpen && (
-          <nav className="border-t border-gray-100 bg-white px-4 sm:px-6 py-4 lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <nav className="animate-in fade-in slide-in-from-top-2 border-t border-gray-100 bg-white px-4 py-4 duration-200 sm:px-6 lg:hidden">
             <div className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
