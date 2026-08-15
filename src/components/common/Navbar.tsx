@@ -25,14 +25,19 @@ export default function Navbar() {
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
       {/* الشريط العلوي للاتصال السريع */}
       <div className="bg-[#1a233a] text-gray-300">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-xs sm:text-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-2 text-xs sm:text-sm">
           <div className="flex items-center gap-6">
             <a
               href={`tel:${siteConfig.phone}`}
-              className="flex items-center gap-2 transition hover:text-[#c5a059]"
+              className="flex flex-col items-start transition hover:text-[#c5a059]"
             >
-              <Phone className="h-3.5 w-3.5 text-[#c5a059]" />
-              <span dir="ltr">{siteConfig.phone}</span>
+              <span className="text-xs font-black tracking-wide text-[#c5a059]" dir="ltr">
+                {siteConfig.phone}
+              </span>
+              <span className="flex items-center gap-1 text-[10px] text-gray-300">
+                <Phone className="h-3 w-3 text-[#c5a059]" />
+                <span>اتصال مباشر</span>
+              </span>
             </a>
             <a
               href={`mailto:${siteConfig.email}`}
@@ -57,14 +62,14 @@ export default function Navbar() {
 
       {/* الشريط الرئيسي والتنقل */}
       <div className="border-b border-gray-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3.5">
           {/* الشعار */}
           <Link
             href="/"
-            className="group flex shrink-0 items-center gap-3.5"
+            className="group flex shrink-0 items-center gap-3"
             aria-label={siteConfig.companyName}
           >
-            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]/60 group-hover:shadow-md">
+            <div className="relative flex h-11 w-11 sm:h-12 sm:w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]/60">
               <Image
                 src="/logo.png"
                 alt={siteConfig.companyName}
@@ -75,10 +80,10 @@ export default function Navbar() {
               />
             </div>
             <div className="flex flex-col text-right leading-tight">
-              <span className="text-base font-black text-[#1a233a] transition-colors duration-200 group-hover:text-[#c5a059] sm:text-lg">
+              <span className="text-sm sm:text-base font-black text-[#1a233a] transition-colors duration-200 group-hover:text-[#c5a059]">
                 {siteConfig.companyName}
               </span>
-              <span className="mt-0.5 text-[10px] font-bold tracking-wider text-gray-500 uppercase transition-colors duration-200 group-hover:text-[#1a233a]">
+              <span className="mt-0.5 text-[9px] sm:text-[10px] font-bold tracking-wider text-gray-500 uppercase">
                 {siteConfig.companyNameEn}
               </span>
             </div>
@@ -98,12 +103,12 @@ export default function Navbar() {
           </nav>
 
           {/* زر طلب عرض سعر وزر القائمة للموبايل */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/contact"
               className="hidden rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-6 py-2.5 text-xs font-bold text-[#1a233a] shadow-md shadow-[#c5a059]/20 transition duration-300 hover:brightness-105 active:scale-95 lg:inline-flex"
             >
-              طلب عرض سعر
+               طلب عرض سعر
             </Link>
 
             <button
@@ -119,7 +124,7 @@ export default function Navbar() {
 
         {/* القائمة المنسدلة للجوال */}
         {isOpen && (
-          <nav className="border-t border-gray-100 bg-white px-4 py-4 lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
+          <nav className="border-t border-gray-100 bg-white px-4 sm:px-6 py-4 lg:hidden animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col space-y-1">
               {navItems.map((item) => (
                 <Link
