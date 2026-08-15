@@ -22,9 +22,10 @@ export default function Navbar() {
 
   return (
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
-      {/* الشريط العلوي للاتصال السريع */}
+      {/* الشريط العلوي للاتصال السريع - مع إظهار واتساب مباشر */}
       <div className="w-full bg-[#1a233a] text-gray-300">
-        <div className="flex w-full items-center justify-between px-0 py-2 sm:px-6 sm:text-sm lg:px-8">
+        <div className="flex w-full items-center justify-between px-0 py-2 sm:px-6 lg:px-8">
+          {/* الجهة اليمنى (رقم الهاتف والإيميل) */}
           <div className="flex items-center gap-2 sm:gap-6">
             {/* أيقونة الاتصال */}
             <a
@@ -56,14 +57,15 @@ export default function Navbar() {
             </a>
           </div>
 
+          {/* الجهة اليسرى - واتساب مباشر (يظهر دائماً) */}
           <a
             href={directWhatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 font-bold text-[#c5a059] transition hover:text-white sm:gap-1.5"
+            className="flex shrink-0 items-center gap-1.5 font-bold text-[#c5a059] transition hover:text-white sm:gap-2"
           >
-            <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">واتساب مباشر</span>
+            <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="text-[10px] sm:text-sm">واتساب مباشر</span>
           </a>
         </div>
       </div>
