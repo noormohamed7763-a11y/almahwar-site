@@ -13,7 +13,6 @@ export interface IProjectRepository {
   delete(id: string): Promise<boolean>
 }
 
-// دالة مساعدة محددة النوع بدقة لتحويل كائنات Prisma إلى ProjectItem
 function mapToProjectItem(item: PrismaProject): ProjectItem {
   return {
     ...item,
