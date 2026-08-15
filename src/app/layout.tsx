@@ -76,16 +76,18 @@ export default function RootLayout({
       })),
     },
   }
+
   return (
     <html lang="ar" dir="rtl">
-      <body className="bg-gray-50 text-gray-900 antialiased font-sans overflow-x-hidden">
+      {/* إزالة أي هوامش من body */}
+      <body className="m-0 p-0 w-full overflow-x-hidden bg-white text-gray-900 antialiased font-sans">
         <script
           key="ld-json"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Navbar />
-        <main className="min-h-screen">{children}</main>
+        <main className="w-full min-h-screen m-0 p-0">{children}</main>
         <Footer />
       </body>
     </html>

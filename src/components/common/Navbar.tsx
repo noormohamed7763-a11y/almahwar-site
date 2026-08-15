@@ -23,15 +23,14 @@ export default function Navbar() {
   return (
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
       {/* الشريط العلوي للاتصال السريع */}
-      <div className="bg-[#1a233a] text-gray-300">
+      <div className="w-full bg-[#1a233a] text-gray-300">
         <div className="flex w-full items-center justify-between px-0 py-2 sm:px-6 sm:text-sm lg:px-8">
           <div className="flex items-center gap-2 sm:gap-6">
-            {/* أيقونة الاتصال - تم تكبيرها وتوضيحها */}
+            {/* أيقونة الاتصال */}
             <a
               href={`tel:${siteConfig.phone}`}
               className="group flex items-center gap-2 transition sm:gap-2"
             >
-              {/* خلفية الأيقونة - أكبر وأوضح */}
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#c5a059] text-white shadow-md shadow-[#c5a059]/30 transition group-hover:scale-105 group-hover:bg-[#d4b06a] sm:h-10 sm:w-10">
                 <Phone className="h-4 w-4 text-white sm:h-5 sm:w-5" />
               </div>
@@ -70,7 +69,7 @@ export default function Navbar() {
       </div>
 
       {/* الشريط الرئيسي والتنقل */}
-      <div className="border-b border-gray-100 bg-white">
+      <div className="w-full border-b border-gray-100 bg-white">
         <div className="flex w-full items-center justify-between px-0 py-2 sm:px-6 lg:px-8">
           {/* الشعار */}
           <Link

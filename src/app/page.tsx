@@ -53,12 +53,13 @@ export default async function HomePage() {
   )}`
 
   return (
-    <main className="overflow-x-hidden bg-white" dir="rtl">
+    <main className="w-full overflow-x-hidden bg-white" dir="rtl">
       {/* 1. قسم البداية (Hero Section) */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0e1424] via-[#162035] to-[#0f172a] py-10 text-white sm:py-16 lg:py-24">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#0e1424] via-[#162035] to-[#0f172a] py-10 text-white sm:py-16 lg:py-24">
+        {/* إزالة max-w-7xl و mx-auto و px-4 على الموبايل */}
+        <div className="relative w-full px-0 sm:px-6 lg:px-8">
           <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
-            <div className="text-right lg:col-span-5">
+            <div className="text-right px-4 sm:px-0 lg:col-span-5">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1 text-[11px] font-bold text-[#c5a059] shadow-inner">
                 <BadgeCheck className="h-3.5 w-3.5 shrink-0" />
                 <span>شركة مقاولات معتمدة بالمملكة</span>
@@ -101,7 +102,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="relative lg:col-span-7">
+            <div className="relative lg:col-span-7 px-4 sm:px-0">
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-3 sm:space-y-4">
                   {heroImages.slice(0, 2).map((item, idx) => (
@@ -162,13 +163,13 @@ export default async function HomePage() {
       </section>
 
       {/* 2. قسم الخدمات */}
-      <section className="bg-[#f8fafc] py-12 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+      <section className="w-full bg-[#f8fafc] py-12 sm:py-20">
+        <div className="w-full px-0 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 px-4 sm:px-0">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">خدماتنا</span>
             <h2 className="mt-2 text-2xl font-extrabold text-[#1a233a] sm:text-3xl">حلول متكاملة لجميع احتياجاتك الإنشائية</h2>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 px-4 sm:px-0 sm:gap-6 lg:grid-cols-4">
             {services.map((service) => {
               const Icon = service.icon
               return (
@@ -196,13 +197,13 @@ export default async function HomePage() {
       <FeaturedProjectsSection />
 
       {/* 4. قسم لماذا نحن */}
-      <section className="bg-[#1a233a] py-12 sm:py-20 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+      <section className="w-full bg-[#1a233a] py-12 sm:py-20 text-white">
+        <div className="w-full px-0 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 px-4 sm:px-0">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">لماذا نحن؟</span>
             <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">مميزات تجعلنا الخيار الأول</h2>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 px-4 sm:px-0 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => {
               const Icon = feature.icon
               return (
@@ -223,13 +224,13 @@ export default async function HomePage() {
       </section>
 
       {/* 5. قسم المدونة */}
-      <section className="bg-[#f8fafc] py-12 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
+      <section className="w-full bg-[#f8fafc] py-12 sm:py-20">
+        <div className="w-full px-0 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 px-4 sm:px-0">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">المدونة</span>
             <h2 className="mt-2 text-2xl font-extrabold text-[#1a233a] sm:text-3xl">أحدث المقالات الهندسية</h2>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 px-4 sm:px-0 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map((article) => (
               <Link
                 key={article.id}
