@@ -25,20 +25,24 @@ export default function Navbar() {
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
       {/* الشريط العلوي للاتصال السريع */}
       <div className="bg-[#1a233a] text-gray-300">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-2 text-xs sm:text-sm">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 py-2.5 text-xs sm:text-sm">
           <div className="flex items-center gap-6">
+            {/* أيقونة الاتصال الواضحة بجانب الرقم */}
             <a
               href={`tel:${siteConfig.phone}`}
-              className="flex flex-col items-start transition hover:text-[#c5a059]"
+              className="group flex items-center gap-2.5 transition"
             >
-              <span className="text-xs font-black tracking-wide text-[#c5a059]" dir="ltr">
-                {siteConfig.phone}
-              </span>
-              <span className="flex items-center gap-1 text-[10px] text-gray-300">
-                <Phone className="h-3 w-3 text-[#c5a059]" />
-                <span>اتصال مباشر</span>
-              </span>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#c5a059]/15 text-[#c5a059] transition group-hover:bg-[#c5a059] group-hover:text-[#1a233a]">
+                <Phone className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col text-right leading-tight">
+                <span className="text-xs font-black tracking-wide text-white" dir="ltr">
+                  {siteConfig.phone}
+                </span>
+                <span className="text-[10px] text-gray-300">اتصال مباشر</span>
+              </div>
             </a>
+
             <a
               href={`mailto:${siteConfig.email}`}
               className="hidden items-center gap-2 transition hover:text-[#c5a059] sm:flex"
@@ -108,7 +112,7 @@ export default function Navbar() {
               href="/contact"
               className="hidden rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-6 py-2.5 text-xs font-bold text-[#1a233a] shadow-md shadow-[#c5a059]/20 transition duration-300 hover:brightness-105 active:scale-95 lg:inline-flex"
             >
-               طلب عرض سعر
+              طلب عرض سعر
             </Link>
 
             <button
