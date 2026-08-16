@@ -14,21 +14,21 @@ export default function SectionHeading({
   dark = false,
 }: SectionHeadingProps) {
   return (
-    <div className="mx-auto mb-14 max-w-2xl text-center">
-      <span className="text-sm font-bold tracking-widest text-[#c5a059]">
+    <div className="mx-auto mb-10 max-w-2xl px-4 text-center sm:mb-14">
+      <span className="text-xs font-bold tracking-widest text-[#c5a059] sm:text-sm">
         {eyebrow}
       </span>
       <h2
-        className={`mt-3 text-3xl font-extrabold sm:text-4xl ${
+        className={`mt-3 text-2xl font-extrabold sm:text-3xl lg:text-4xl ${
           dark ? 'text-white' : 'text-[#1a233a]'
         }`}
       >
         {title}
       </h2>
-      <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a]" />
+      <div className="mx-auto mt-4 h-1 w-16 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a] sm:w-20" />
       {description && (
         <p
-          className={`mt-4 leading-7 ${
+          className={`mt-4 text-sm leading-7 sm:text-base ${
             dark ? 'text-gray-400' : 'text-gray-600'
           }`}
         >

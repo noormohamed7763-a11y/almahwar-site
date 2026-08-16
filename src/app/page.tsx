@@ -72,10 +72,10 @@ export default async function HomePage() {
                 {siteConfig.description}
               </p>
 
-              <div className="mt-5 flex flex-wrap items-center gap-3">
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   href="/projects"
-                  className="inline-flex flex-1 sm:flex-none items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-5 py-3 text-xs sm:text-sm font-bold text-[#1a233a] shadow-md transition-all hover:brightness-105"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-5 py-3 text-xs font-bold text-[#1a233a] shadow-md transition-all hover:brightness-105 sm:w-auto sm:text-sm"
                 >
                   <span>استكشف مشاريعنا</span>
                   <ArrowUpRight className="h-4 w-4" />
@@ -83,7 +83,7 @@ export default async function HomePage() {
 
                 <Link
                   href="/contact"
-                  className="inline-flex flex-1 sm:flex-none items-center justify-center rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-xs sm:text-sm font-semibold text-white transition hover:bg-white/10"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-xs font-semibold text-white transition hover:bg-white/10 sm:w-auto sm:text-sm"
                 >
                   طلب عرض سعر
                 </Link>
@@ -256,7 +256,7 @@ export default async function HomePage() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="تواصل معنا عبر الواتساب"
-        className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-3 sm:px-5 sm:py-3.5 text-xs sm:text-sm font-bold text-white shadow-xl shadow-[#25d366]/30 transition hover:scale-105 active:scale-95"
+        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-3 text-xs font-bold text-white shadow-xl shadow-[#25d366]/30 transition hover:scale-105 active:scale-95 sm:px-5 sm:py-3.5 sm:text-sm"
       >
         <MessageCircle className="h-5 w-5" />
         <span>واتساب</span>

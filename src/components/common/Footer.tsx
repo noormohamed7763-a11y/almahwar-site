@@ -8,10 +8,8 @@ import { services } from '@/data/siteData'
 export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[#0e1424] text-gray-400" dir="rtl">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          
-          {/* نبذة عن الشركة والشعار المطور */}
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="group flex items-center gap-3.5" aria-label={siteConfig.companyName}>
               <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#c5a059]/30 bg-gradient-to-br from-white/10 to-white/5 p-1.5 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]">
@@ -24,7 +22,7 @@ export default function Footer() {
                 />
               </div>
 
-              <div className="flex flex-col text-right leading-tight">
+              <div className="flex min-w-0 flex-col text-right leading-tight">
                 <span className="text-base font-extrabold text-white transition-colors duration-200 group-hover:text-[#c5a059]">
                   {siteConfig.companyName}
                 </span>
@@ -39,9 +37,8 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* روابط سريعة */}
           <div>
-            <h3 className="text-xs font-bold tracking-wider text-[#c5a059] uppercase">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#c5a059] uppercase sm:text-xs">
               روابط سريعة
             </h3>
             <ul className="mt-4 space-y-2.5 text-xs">
@@ -63,9 +60,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* خدمات الشركة */}
           <div>
-            <h3 className="text-xs font-bold tracking-wider text-[#c5a059] uppercase">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#c5a059] uppercase sm:text-xs">
               خدماتنا المتخصصة
             </h3>
             <ul className="mt-4 space-y-2.5 text-xs">
@@ -83,15 +79,14 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* بيانات التواصل */}
           <div>
-            <h3 className="text-xs font-bold tracking-wider text-[#c5a059] uppercase">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#c5a059] uppercase sm:text-xs">
               بيانات التواصل
             </h3>
             <ul className="mt-4 space-y-3 text-xs">
               <li className="flex items-start gap-2.5">
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#c5a059]" />
-                <span>{siteConfig.address}</span>
+                <span className="leading-relaxed">{siteConfig.address}</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 shrink-0 text-[#c5a059]" />
@@ -107,23 +102,22 @@ export default function Footer() {
                 <Mail className="h-4 w-4 shrink-0 text-[#c5a059]" />
                 <a
                   href={`mailto:${siteConfig.email}`}
-                  className="transition hover:text-[#c5a059]"
+                  className="break-all transition hover:text-[#c5a059]"
                 >
                   {siteConfig.email}
                 </a>
               </li>
               <li className="flex items-start gap-2.5">
                 <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#c5a059]" />
-                <span>{siteConfig.workingHours}</span>
+                <span className="leading-relaxed">{siteConfig.workingHours}</span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* شريط الحقوق */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 text-xs text-gray-500 sm:flex-row">
+        <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/5 pt-8 text-[11px] text-gray-500 sm:flex-row sm:text-xs">
           <p>© {new Date().getFullYear()} {siteConfig.companyName}. جميع الحقوق محفوظة.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <span className="text-gray-400">تنفيذ هندسي معتمد</span>
             <Link
               href="/admin"
