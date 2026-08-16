@@ -7,7 +7,7 @@ import SectionHeading from '@/components/ui/SectionHeading'
 export default function HomeServicesSection() {
   return (
     <section className="bg-white py-20" dir="rtl">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="خدماتنا"
           title="حلول إنشائية وهندسية متكاملة"

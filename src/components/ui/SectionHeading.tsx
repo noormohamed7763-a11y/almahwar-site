@@ -14,7 +14,7 @@ export default function SectionHeading({
   dark = false,
 }: SectionHeadingProps) {
   return (
-    <div className="mx-auto mb-10 max-w-2xl px-4 text-center sm:mb-14">
+    <div className="mx-auto mb-10 max-w-2xl px-0 text-center sm:mb-14 sm:px-4">
       <span className="text-xs font-bold tracking-widest text-[#c5a059] sm:text-sm">
         {eyebrow}
       </span>

@@ -17,7 +17,7 @@ export default async function ProjectsPage() {
 
   return (
     <main className="min-h-screen bg-[#f8fafc] py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         <div className="mx-auto mb-14 max-w-3xl text-center">
           <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">
             سابقة الأعمال الهندسية

@@ -7,7 +7,7 @@ import SectionHeading from '@/components/ui/SectionHeading'
 export default function HomeArticlesSection() {
   return (
     <section className="bg-[#f8fafc] py-20" dir="rtl">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="المدونة الفنية"
           title="أحدث المقالات والإرشادات الهندسية"

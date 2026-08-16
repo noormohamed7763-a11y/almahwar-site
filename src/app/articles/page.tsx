@@ -10,7 +10,7 @@ export const metadata = {
 export default function ArticlesPage() {
   return (
     <main className="min-h-screen bg-[#f5f7fa] py-16">
-      <div className="mx-auto max-w-7xl px-4">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         <div className="mx-auto mb-16 max-w-2xl text-center">
           <span className="text-sm font-bold tracking-widest text-[#c5a059]">المدونة والمعرفة</span>
           <h1 className="mt-3 text-3xl font-extrabold text-[#1a233a] sm:text-4xl">

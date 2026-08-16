@@ -8,7 +8,7 @@ import { services } from '@/data/siteData'
 export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[#0e1424] text-gray-400" dir="rtl">
-      <div className="w-full px-4 py-12 sm:px-6 sm:py-16 lg:mx-auto lg:max-w-7xl lg:px-8">
+      <div className="w-full px-0 py-12 sm:px-6 sm:py-16 lg:mx-auto lg:max-w-7xl lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="group flex items-center gap-3.5" aria-label={siteConfig.companyName}>

@@ -23,7 +23,7 @@ export const metadata = {
 export default function ServicesPage() {
   return (
     <main className="min-h-screen bg-[#f8fafc] py-12 lg:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         {/* شريط التنقل الفرعي */}
         <nav className="mb-8 flex items-center gap-2 text-xs font-semibold text-gray-500">
           <Link href="/" className="transition hover:text-[#c5a059]">

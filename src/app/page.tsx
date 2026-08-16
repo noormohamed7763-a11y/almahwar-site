@@ -56,7 +56,7 @@ export default async function HomePage() {
     <main className="overflow-x-hidden bg-white" dir="rtl">
       {/* 1. قسم البداية (Hero Section) */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0e1424] via-[#162035] to-[#0f172a] py-10 text-white sm:py-16 lg:py-24">
-        <div className="relative w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="relative w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
             <div className="text-right lg:col-span-5">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1 text-[11px] font-bold text-[#c5a059] shadow-inner">
@@ -163,7 +163,7 @@ export default async function HomePage() {
 
       {/* 2. قسم الخدمات */}
       <section className="bg-[#f8fafc] py-12 sm:py-20">
-        <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">خدماتنا</span>
             <h2 className="mt-2 text-2xl font-extrabold text-[#1a233a] sm:text-3xl">حلول متكاملة لجميع احتياجاتك الإنشائية</h2>
@@ -197,7 +197,7 @@ export default async function HomePage() {
 
       {/* 4. قسم لماذا نحن */}
       <section className="bg-[#1a233a] py-12 sm:py-20 text-white">
-        <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">لماذا نحن؟</span>
             <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">مميزات تجعلنا الخيار الأول</h2>
@@ -224,7 +224,7 @@ export default async function HomePage() {
 
       {/* 5. قسم المدونة */}
       <section className="bg-[#f8fafc] py-12 sm:py-20">
-        <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">المدونة</span>
             <h2 className="mt-2 text-2xl font-extrabold text-[#1a233a] sm:text-3xl">أحدث المقالات الهندسية</h2>

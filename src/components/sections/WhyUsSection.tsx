@@ -28,7 +28,7 @@ const features = [
 export default function WhyUsSection() {
   return (
     <section className="bg-[#1a233a] py-20 text-white" dir="rtl">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-0 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="لماذا تختارنا؟"
           title="معايير تجعلنا الخيار الموثوق لمشروعك"

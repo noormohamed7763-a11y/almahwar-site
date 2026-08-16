@@ -64,7 +64,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
   return (
     <main dir="rtl" className="overflow-x-hidden">
       <section className="bg-[#1a233a]">
-        <div className="mx-auto max-w-7xl px-4 py-14">
+        <div className="mx-auto max-w-7xl px-0 py-14 sm:px-6 lg:px-8">
           <nav
             aria-label="مسار التنقل"
             className="mb-6 flex items-center gap-2 text-sm text-gray-400"
@@ -97,7 +97,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       </section>
 
       <section className="bg-[#f5f7fa] py-14">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-3">
+        <div className="mx-auto grid max-w-7xl gap-10 px-0 sm:px-6 lg:grid-cols-3 lg:px-8">
           <div className="lg:col-span-2">
             <article className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
               <h2 className="text-2xl font-extrabold text-[#1a233a]">
