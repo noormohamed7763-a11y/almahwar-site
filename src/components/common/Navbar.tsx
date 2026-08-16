@@ -23,7 +23,7 @@ export default function Navbar() {
   return (
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
       <div className="bg-[#1a233a] text-gray-300">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-4 py-2 text-[11px] sm:px-6 sm:text-sm lg:px-8">
+        <div className="flex w-full items-center justify-between gap-2 px-4 py-2 text-[11px] sm:px-6 sm:text-sm lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="flex min-w-0 items-center gap-2 sm:gap-6">
             <a
               href={`tel:${siteConfig.phone}`}
@@ -55,7 +55,7 @@ export default function Navbar() {
       </div>
 
       <div className="border-b border-gray-100 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 lg:px-8">
+        <div className="flex w-full items-center justify-between gap-3 px-4 py-3.5 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <Link
             href="/"
             className="group flex min-w-0 shrink-0 items-center gap-3.5"
