@@ -115,6 +115,11 @@ export default function AdminServicesPage() {
         formElement.reset()
         await fetchServices()
         router.refresh()
+        
+        // فتح معرض الصور فوراً للخدمة الجديدة ليتمكن من رفع الصور من جهازه مباشرة
+        if (!editingService && 'serviceId' in res && res.serviceId) {
+          setGalleryServiceId(res.serviceId as string)
+        }
       } else {
         setActionError(res.error || 'فشل حفظ الخدمة')
       }
@@ -479,6 +484,59 @@ export default function AdminServicesPage() {
                   />
                 </div>
 
+                {/* صورة الخدمة والشرح الفني الأول */}
+                {!editingService && (
+                  <div className="space-y-3 rounded-2xl border-2 border-dashed border-gray-200 p-4">
+                    <label className="block text-xs font-bold text-[#1a233a]">
+                      صورة الخدمة الأولى (اختياري — ارفع من جهازك مباشرة)
+                    </label>
+
+                    {imagePreview && (
+                      <div className="relative h-40 w-full overflow-hidden rounded-xl bg-gray-100">
+                        <Image src={imagePreview} alt="معاينة" fill className="object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImagePreview(null)
+                            const input = document.getElementById('service-initial-image') as HTMLInputElement
+                            if (input) input.value = ''
+                          }}
+                          className="absolute left-2 top-2 rounded-full bg-red-600 p-1.5 text-white shadow"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+
+                    <label className="flex cursor-pointer flex-col items-center gap-2 text-center text-xs text-gray-500">
+                      <Upload className="h-7 w-7 text-[#c5a059]" />
+                      <span className="font-bold text-[#1a233a]">
+                        {imagePreview ? 'اضغط هنا لتغيير الصورة المحددة' : 'اضغط هنا لاختيار صورة الخدمة من جهازك'}
+                      </span>
+                      <span>JPG أو PNG أو WebP أو AVIF — بحد أقصى 5 ميجابايت</span>
+                      <input
+                        id="service-initial-image"
+                        name="image"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          setImagePreview(file ? URL.createObjectURL(file) : null)
+                        }}
+                      />
+                    </label>
+
+                    <input
+                      name="imageCaption"
+                      type="text"
+                      maxLength={500}
+                      placeholder="الشرح الفني للصورة (اختياري — مثال: ألواح الأسقف Roof Panels...)"
+                      className="w-full rounded-xl border border-gray-200 p-3 text-xs outline-none focus:border-[#c5a059]"
+                    />
+                  </div>
+                )}
+
                 <label className="flex items-center gap-2.5 rounded-xl bg-gray-50 p-3.5">
                   <input
                     name="isPublished"
@@ -576,12 +634,12 @@ export default function AdminServicesPage() {
                 </label>
 
                 <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                  <input
+                  <textarea
                     name="caption"
-                    type="text"
-                    maxLength={200}
-                    placeholder="وصف الصورة (اختياري) — يظهر تحتها"
-                    className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-[#c5a059]"
+                    rows={2}
+                    maxLength={500}
+                    placeholder="وصف الشرح والشروط الفنية للصورة (مثال: ألواح الأسقف Roof Panels: تأتي الطبقة المعدنية الخارجية بشكل مضلع بارز...)"
+                    className="w-full rounded-xl border border-gray-200 p-3 text-xs outline-none focus:border-[#c5a059] resize-none"
                   />
                   <button
                     type="submit"
@@ -616,18 +674,18 @@ export default function AdminServicesPage() {
                         />
                       </div>
 
-                      <input
-                        type="text"
+                      <textarea
+                        rows={2}
                         defaultValue={img.caption || ''}
-                        maxLength={200}
-                        placeholder="وصف الصورة"
+                        maxLength={500}
+                        placeholder="وصف الشرح الفني للصورة"
                         onBlur={(e) => {
                           const next = e.target.value.trim()
                           if (next !== (img.caption || '')) {
                             handleSaveCaption(img.id, next)
                           }
                         }}
-                        className="w-full rounded-xl border border-gray-200 p-2.5 text-xs outline-none focus:border-[#c5a059]"
+                        className="w-full rounded-xl border border-gray-200 p-2.5 text-xs outline-none focus:border-[#c5a059] resize-none"
                       />
 
                       <div className="flex shrink-0 items-center gap-1.5">

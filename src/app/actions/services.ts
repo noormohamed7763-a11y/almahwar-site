@@ -20,7 +20,7 @@ const UNAUTHORIZED = {
 /** حدود أطوال النصوص — الأعمدة نوعها TEXT بلا سقف في القاعدة */
 const MAX_TITLE = 120;
 const MAX_DESCRIPTION = 4000;
-const MAX_CAPTION = 200;
+const MAX_CAPTION = 500;
 
 /**
  * تحديث الكاش لكل ما يعرض الخدمات.
@@ -90,6 +90,26 @@ export async function createService(formData: FormData) {
         sortOrder,
       },
     });
+
+    // رفع صورة أولية إن وُجدت أثناء إضافة الخدمة
+    const imageFile = formData.get("image");
+    const captionRaw = formData.get("imageCaption");
+    const captionText = typeof captionRaw === "string" ? captionRaw.trim() : "";
+
+    if (imageFile instanceof File && imageFile.size > 0) {
+      const validation = await validateImageFile(imageFile);
+      if (validation.ok) {
+        const url = await uploadServiceImage(validation.value);
+        await prisma.serviceImage.create({
+          data: {
+            serviceId: service.id,
+            url,
+            caption: captionText || null,
+            sortOrder: 0,
+          },
+        });
+      }
+    }
 
     revalidateServiceViews(slug);
     return { success: true, serviceId: service.id };

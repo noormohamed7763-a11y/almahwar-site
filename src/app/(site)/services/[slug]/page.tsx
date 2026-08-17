@@ -15,6 +15,8 @@ import { siteConfig } from '@/config/site'
 import { getServiceBySlug, listOtherServices } from '@/lib/servicesRepository'
 import ServiceIcon from '@/components/common/ServiceIcon'
 import QuoteForm from '@/components/common/QuoteForm'
+import ServiceGallery from '@/components/services/ServiceGallery'
+import ServiceContentFormatter from '@/components/services/ServiceContentFormatter'
 import { getServiceInquiryUrl } from '@/utils/whatsapp'
 
 interface ServicePageProps {
@@ -107,49 +109,17 @@ export default async function ServicePage({ params }: ServicePageProps) {
           
           {/* التفاصيل ومعرض الصور الموحد */}
           <div className="lg:col-span-2 space-y-10">
-            <article className="rounded-2xl bg-white p-6 sm:p-8 shadow-sm ring-1 ring-gray-100">
-              <h2 className="text-2xl font-extrabold text-[#1a233a]">
-                نبذة عن خدمة {service.title}
-              </h2>
-              <div className="mt-4 h-1 w-20 rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a]" />
-              <p className="mt-6 leading-8 text-gray-700 whitespace-pre-line">
-                {service.description}
-              </p>
-            </article>
+            <ServiceContentFormatter
+              description={service.description}
+              serviceTitle={service.title}
+            />
 
-            {/* معرض الصور والأوصاف */}
+            {/* معرض الصور المطور والأوصاف الفنية */}
             {service.images && service.images.length > 0 && (
-              <div className="rounded-2xl bg-white p-6 sm:p-8 shadow-sm ring-1 ring-gray-100">
-                <h3 className="text-xl font-extrabold text-[#1a233a] mb-6">
-                  معرض أعمال وتنفيذ الخدمة
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {service.images.map((img) => (
-                    <div
-                      key={img.id}
-                      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md"
-                    >
-                      <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
-                        <Image
-                          src={img.url}
-                          alt={img.caption || service.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, 50vw"
-                        />
-                      </div>
-
-                      {img.caption && (
-                        <div className="p-4 flex-1 flex items-center bg-white border-t border-gray-50">
-                          <p className="text-sm font-bold text-[#1a233a] leading-snug">
-                            {img.caption}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <ServiceGallery
+                images={service.images}
+                serviceTitle={service.title}
+              />
             )}
 
             {/* قسم الخدمات الأخرى */}
