@@ -109,18 +109,19 @@ export default async function ServicePage({ params }: ServicePageProps) {
           
           {/* التفاصيل ومعرض الصور الموحد */}
           <div className="lg:col-span-2 space-y-10">
-            <ServiceContentFormatter
-              description={service.description}
-              serviceTitle={service.title}
-            />
-
-            {/* معرض الصور المطور والأوصاف الفنية */}
+            {/* معرض الصور المطور والأوصاف الفنية بالأعلى */}
             {service.images && service.images.length > 0 && (
               <ServiceGallery
                 images={service.images}
                 serviceTitle={service.title}
               />
             )}
+
+            {/* تفاصيل وشرح الخدمة الهيكلي */}
+            <ServiceContentFormatter
+              description={service.description}
+              serviceTitle={service.title}
+            />
 
             {/* قسم الخدمات الأخرى */}
             <div className="rounded-2xl bg-[#1a233a] p-8 text-white">
