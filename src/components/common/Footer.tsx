@@ -3,9 +3,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Phone, Mail, MapPin, Clock, ArrowUpRight } from 'lucide-react'
 import { siteConfig } from '@/config/site'
-import { services } from '@/data/siteData'
+import { listServicesForNavigation } from '@/lib/servicesRepository'
 
-export default function Footer() {
+export default async function Footer() {
+  // من قاعدة البيانات لا من مصفوفة ثابتة: الروابط الثابتة كانت تحمل
+  // slugs قديمة لا وجود لها في القاعدة فتؤدي كلها إلى 404
+  const services = await listServicesForNavigation(5)
+
   return (
     <footer className="border-t border-white/10 bg-[#0e1424] text-gray-400" dir="rtl">
       <div className="w-full px-0 py-12 sm:px-6 sm:py-16 lg:mx-auto lg:max-w-7xl lg:px-8">
@@ -43,41 +47,43 @@ export default function Footer() {
             </h3>
             <ul className="mt-4 space-y-2.5 text-xs">
               <li>
-                <Link href="/" className="transition hover:text-[#c5a059]">الرئيسية</Link>
+                <Link href="/" className="tap-area transition hover:text-[#c5a059]">الرئيسية</Link>
               </li>
               <li>
-                <Link href="/services" className="transition hover:text-[#c5a059]">خدماتنا</Link>
+                <Link href="/services" className="tap-area transition hover:text-[#c5a059]">خدماتنا</Link>
               </li>
               <li>
-                <Link href="/projects" className="transition hover:text-[#c5a059]">معرض المشاريع</Link>
+                <Link href="/projects" className="tap-area transition hover:text-[#c5a059]">معرض المشاريع</Link>
               </li>
               <li>
-                <Link href="/articles" className="transition hover:text-[#c5a059]">المقالات الهندسية</Link>
+                <Link href="/articles" className="tap-area transition hover:text-[#c5a059]">المقالات الهندسية</Link>
               </li>
               <li>
-                <Link href="/contact" className="transition hover:text-[#c5a059]">اتصل بنا</Link>
+                <Link href="/contact" className="tap-area transition hover:text-[#c5a059]">اتصل بنا</Link>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-[11px] font-bold tracking-wider text-[#c5a059] uppercase sm:text-xs">
-              خدماتنا المتخصصة
-            </h3>
-            <ul className="mt-4 space-y-2.5 text-xs">
-              {services.slice(0, 5).map((service) => (
-                <li key={service.id}>
-                  <Link
-                    href={`/services/${service.slug}`}
-                    className="flex items-center gap-1 transition hover:text-[#c5a059]"
-                  >
-                    <span>{service.title}</span>
-                    <ArrowUpRight className="h-3 w-3 text-[#c5a059]" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {services.length > 0 && (
+            <div>
+              <h3 className="text-[11px] font-bold tracking-wider text-[#c5a059] uppercase sm:text-xs">
+                خدماتنا المتخصصة
+              </h3>
+              <ul className="mt-4 space-y-2.5 text-xs">
+                {services.map((service) => (
+                  <li key={service.id}>
+                    <Link
+                      href={`/services/${service.slug}`}
+                      className="tap-area flex items-center gap-1 transition hover:text-[#c5a059]"
+                    >
+                      <span>{service.title}</span>
+                      <ArrowUpRight className="h-3 w-3 text-[#c5a059]" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div>
             <h3 className="text-[11px] font-bold tracking-wider text-[#c5a059] uppercase sm:text-xs">
@@ -92,7 +98,7 @@ export default function Footer() {
                 <Phone className="h-4 w-4 shrink-0 text-[#c5a059]" />
                 <a
                   href={`tel:${siteConfig.phone}`}
-                  className="transition hover:text-[#c5a059]"
+                  className="tap-area transition hover:text-[#c5a059]"
                   dir="ltr"
                 >
                   {siteConfig.phone}
@@ -102,7 +108,7 @@ export default function Footer() {
                 <Mail className="h-4 w-4 shrink-0 text-[#c5a059]" />
                 <a
                   href={`mailto:${siteConfig.email}`}
-                  className="break-all transition hover:text-[#c5a059]"
+                  className="tap-area break-all transition hover:text-[#c5a059]"
                 >
                   {siteConfig.email}
                 </a>
@@ -121,7 +127,7 @@ export default function Footer() {
             <span className="text-gray-400">تنفيذ هندسي معتمد</span>
             <Link
               href="/admin"
-              className="text-gray-600 transition hover:text-[#c5a059]"
+              className="tap-area text-gray-600 transition hover:text-[#c5a059]"
             >
               بوابة الإدارة
             </Link>

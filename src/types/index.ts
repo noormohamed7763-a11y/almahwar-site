@@ -40,7 +40,18 @@ export interface Article {
   excerpt: string
   metaDescription: string
   keywords: string[]
-  readTime: string
+  /**
+   * متن المقال بصيغة Markdown مبسّطة: ## و### و#### للعناوين،
+   * و* للقوائم، و1. للقوائم المرقّمة. يُعرَض عبر ArticleBody.
+   *
+   * فارغ = مسوّدة لم يُكتب متنها بعد.
+   */
+  content: string
+  /**
+   * المسوّدة لا تظهر في قائمة المقالات ولا في خريطة الموقع، ولا
+   * تُبنى لها صفحة. تُنشر بمجرد إزالة هذا الحقل وإضافة المتن.
+   */
+  isDraft?: boolean
 }
 
 // واجهة بيانات المشاريع

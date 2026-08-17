@@ -1,10 +1,11 @@
 import { cookies } from 'next/headers'
+import { getAuthSecret, EnvConfigError } from '@/lib/env'
 
 export const AUTH_COOKIE_NAME = 'almahwar_admin_session'
 const SESSION_MAX_AGE = 60 * 60 * 24 // 24 ساعة بالثواني
 
 function getSecretKey(): string {
-  return process.env.AUTH_SECRET || 'almahwar_secure_auth_secret_key_2026_default'
+  return getAuthSecret()
 }
 
 /**
@@ -91,7 +92,13 @@ export async function verifySessionToken(token?: string): Promise<boolean> {
       signatureBytes,
       encoder.encode(payload)
     )
-  } catch {
+  } catch (error) {
+    // الفشل مغلق: أي خطأ يعني «غير مصرَّح».
+    // لكن خطأ الإعدادات يُسجَّل صراحةً وإلا صار نشرٌ ناقص الإعداد
+    // يبدو كجلسة منتهية ولا يمكن تشخيصه.
+    if (error instanceof EnvConfigError) {
+      console.error('[أمان] لا يمكن التحقق من الجلسات — إعداد ناقص:', error.message)
+    }
     return false
   }
 }
@@ -116,4 +123,24 @@ export async function setAuthCookie(token: string) {
 export async function clearAuthCookie() {
   const cookieStore = await cookies()
   cookieStore.delete(AUTH_COOKIE_NAME)
+}
+
+/**
+ * حارس الصلاحيات لكل عملية كتابة على الخادم.
+ *
+ * ضروري لأن الـ Server Actions في Next.js هي نقاط HTTP عامة مُعرَّفة
+ * عالمياً: تُستدعى بـ POST إلى أي مسار عبر ترويسة Next-Action، ولا يمرّ
+ * عليها الـ middleware. لذلك كل دالة كتابة يجب أن تتحقق من الجلسة بنفسها،
+ * ولا يجوز الاعتماد على حماية المسار /admin إطلاقاً.
+ *
+ * يرجع true عند وجود جلسة صالحة، و false في كل الحالات الأخرى
+ * (بما فيها غياب مفتاح التوقيع) — أي أن الفشل مغلق دائماً.
+ */
+export async function requireAdmin(): Promise<boolean> {
+  try {
+    return await verifySessionToken()
+  } catch (error) {
+    console.error('[أمان] تعذّر التحقق من صلاحية الجلسة:', error)
+    return false
+  }
 }

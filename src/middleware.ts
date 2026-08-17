@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getAuthSecret, EnvConfigError } from '@/lib/env'
 
 export const AUTH_COOKIE_NAME = 'almahwar_admin_session'
 const SESSION_MAX_AGE = 60 * 60 * 24 // 24 ساعة
 
+/**
+ * نسخة من التحقق تعمل في بيئة Edge.
+ *
+ * التكرار مع lib/auth.ts مقصود مؤقتاً: ذلك الملف يستورد next/headers
+ * وهو غير متاح في الـ middleware. مفتاح التوقيع أصبح يُقرأ الآن من
+ * مصدر واحد (lib/env.ts) فلا يمكن أن يتباعد بين الملفين.
+ *
+ * التوحيد الكامل في دالة نقية مشتركة مؤجَّل إلى مرحلة تنظيف المصادقة.
+ */
 async function verifyToken(token?: string): Promise<boolean> {
   if (!token || !token.includes('.')) return false
 
@@ -17,7 +27,7 @@ async function verifyToken(token?: string): Promise<boolean> {
       return false
     }
 
-    const secret = process.env.AUTH_SECRET || 'almahwar_secure_auth_secret_key_2026_default'
+    const secret = getAuthSecret()
     const encoder = new TextEncoder()
     const key = await crypto.subtle.importKey(
       'raw',
@@ -37,7 +47,13 @@ async function verifyToken(token?: string): Promise<boolean> {
       signatureBytes,
       encoder.encode(payload)
     )
-  } catch {
+  } catch (error) {
+    // الفشل مغلق دائماً: بلا مفتاح توقيع لا توجد جلسة صالحة.
+    // نسجّل خطأ الإعداد صراحةً، وإلا ظهر النشر الناقص كحلقة
+    // إعادة توجيه للدخول بلا أي سبب ظاهر.
+    if (error instanceof EnvConfigError) {
+      console.error('[أمان] الـ middleware لا يستطيع التحقق من الجلسات:', error.message)
+    }
     return false
   }
 }

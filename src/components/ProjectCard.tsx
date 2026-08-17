@@ -88,7 +88,7 @@ export default function ProjectCard({ project, priority = false }: ProjectCardPr
           </div>
 
           <h3 className="text-sm sm:text-base font-bold text-[#1a233a] transition-colors group-hover:text-[#c5a059] line-clamp-2 leading-snug">
-            <Link href={`/projects/${project.slug}`}>
+            <Link href={`/projects/${project.slug}`} className="tap-area">
               {project.title}
             </Link>
           </h3>

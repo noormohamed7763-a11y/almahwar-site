@@ -1,11 +1,17 @@
 import { MetadataRoute } from 'next'
 import { siteConfig } from '@/config/site'
-import { services, articles } from '@/data/siteData'
+import { publishedArticles } from '@/data/siteData'
 import { projectRepository } from '@/lib/projectsRepository'
+import { listServiceRoutes } from '@/lib/servicesRepository'
+
+export const revalidate = 3600 // إعادة التحقق والتحديث كل ساعة
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.domain
-  const projects = await projectRepository.getAll()
+  const [projects, dbServices] = await Promise.all([
+    projectRepository.getAll(),
+    listServiceRoutes(),
+  ])
 
   const staticRoutes: MetadataRoute.Sitemap = [
     '',
@@ -15,14 +21,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/contact',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date('2026-08-15'),
+    lastModified: new Date(),
     changeFrequency: 'weekly',
     priority: route === '' ? 1.0 : 0.8,
   }))
 
-  const serviceRoutes: MetadataRoute.Sitemap = services.map((service) => ({
+  // من القاعدة لا من المصفوفة الثابتة: كانت الخريطة تنشر slugs قديمة
+  // تعيد 404 وتُخفي الخدمات الحقيقية عن الفهرسة
+  const serviceRoutes: MetadataRoute.Sitemap = dbServices.map((service) => ({
     url: `${baseUrl}/services/${service.slug}`,
-    lastModified: new Date('2026-08-15'),
+    lastModified: service.updatedAt,
     changeFrequency: 'monthly',
     priority: 0.9,
   }))
@@ -33,14 +41,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ? new Date(project.updatedAt)
       : project.createdAt
       ? new Date(project.createdAt)
-      : new Date('2026-08-15'),
+      : new Date(),
     changeFrequency: 'monthly',
     priority: 0.85,
   }))
 
-  const articleRoutes: MetadataRoute.Sitemap = articles.map((article) => ({
+  const articleRoutes: MetadataRoute.Sitemap = publishedArticles.map((article) => ({
     url: `${baseUrl}/articles/${article.slug}`,
-    lastModified: new Date('2026-08-15'),
+    lastModified: new Date(),
     changeFrequency: 'monthly',
     priority: 0.7,
   }))

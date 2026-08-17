@@ -19,6 +19,7 @@ import {
   AlertCircle,
   X,
   Building,
+  Wrench,
 } from 'lucide-react'
 import { ProjectItem } from '@/types'
 import { createProject, updateProject, deleteProject } from '@/app/actions/projects'
@@ -158,6 +159,10 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <Link href="/admin/services" className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100">
+              <Wrench className="h-3.5 w-3.5" />
+              <span>إدارة الخدمات</span>
+            </Link>
             <Link href="/" target="_blank" className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-xs font-bold text-gray-700 transition hover:bg-gray-100">
               <span>معاينة الموقع</span>
               <ExternalLink className="h-3.5 w-3.5" />

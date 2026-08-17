@@ -27,14 +27,14 @@ export default function Navbar() {
           <div className="flex min-w-0 items-center gap-2 sm:gap-6">
             <a
               href={`tel:${siteConfig.phone}`}
-              className="flex items-center gap-1.5 truncate transition hover:text-[#c5a059]"
+              className="tap-area flex items-center gap-1.5 truncate transition hover:text-[#c5a059]"
             >
               <Phone className="h-3.5 w-3.5 shrink-0 text-[#c5a059]" />
               <span dir="ltr">{siteConfig.phone}</span>
             </a>
             <a
               href={`mailto:${siteConfig.email}`}
-              className="hidden items-center gap-1.5 truncate transition hover:text-[#c5a059] sm:flex"
+              className="tap-area hidden items-center gap-1.5 truncate transition hover:text-[#c5a059] sm:flex"
             >
               <Mail className="h-3.5 w-3.5 shrink-0 text-[#c5a059]" />
               <span>{siteConfig.email}</span>
@@ -45,7 +45,7 @@ export default function Navbar() {
             href={directWhatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 font-bold text-[#c5a059] transition hover:text-white"
+            className="tap-area inline-flex shrink-0 items-center gap-1.5 font-bold text-[#c5a059] transition hover:text-white"
           >
             <MessageCircle className="h-4 w-4" />
             <span className="hidden sm:inline">واتساب مباشر</span>

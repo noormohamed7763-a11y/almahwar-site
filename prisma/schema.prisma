@@ -32,3 +32,44 @@ model Project {
 
   @@index([category])
 }
+
+model Service {
+  id          String  @id @default(cuid())
+  title       String // عنوان الخدمة
+  slug        String  @unique // الرابط التعريفي للخدمة
+  description String // الوصف التفصيلي للخدمة
+  icon        String? // اسم أيقونة Lucide — يُترجم في src/lib/serviceIcons.ts
+
+  // ترتيب ثابت للعرض. بدونه كان الترتيب يعتمد على createdAt فينعكس
+  // ترتيب الزرع، ويتغير بين الطلبات عند تطابق الطوابع الزمنية.
+  sortOrder Int @default(0)
+
+  // إخفاء خدمة دون حذفها. الافتراضي true حتى تبقى الخدمات القائمة ظاهرة.
+  isPublished Boolean @default(true)
+
+  images    ServiceImage[] // علاقة: الخدمة الواحدة لها عدة صور ووصف
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  // يخدم استعلام صفحة الخدمات: تصفية بالنشر ثم ترتيب بـ sortOrder
+  @@index([isPublished, sortOrder])
+  @@map("services")
+}
+
+model ServiceImage {
+  id        String  @id @default(cuid())
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  url       String // رابط الصورة المرفوعة في Supabase
+  caption   String? // الوصف الذي يظهر تحت الصورة
+  sortOrder Int     @default(0) // لتنظيم ترتيب ظهور الصور
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // PostgreSQL لا يفهرس المفاتيح الأجنبية تلقائياً: بدون هذا الفهرس كان
+  // كل include للصور وكل حذف تعاقبي يمسح الجدول كاملاً. والعمود الثاني
+  // يخدم orderBy: { sortOrder: 'asc' } في صفحة تفاصيل الخدمة.
+  @@index([serviceId, sortOrder])
+  @@map("service_images")
+}
