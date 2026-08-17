@@ -16,13 +16,14 @@ export default async function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <Link href="/" className="group flex items-center gap-3.5" aria-label={siteConfig.companyName}>
-              <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#c5a059]/30 bg-gradient-to-br from-white/10 to-white/5 p-1.5 shadow-lg shadow-black/20 backdrop-blur-md transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]">
+              {/* 🌟 الشعار الفاخر في التذييل بخلفية ناصعة وبحجم يبرز كافة التفاصيل الإنشائية */}
+              <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#c5a059]/40 bg-white p-1 shadow-xl shadow-[#c5a059]/20 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059] group-hover:shadow-2xl group-hover:shadow-[#c5a059]/30 sm:h-16 sm:w-16">
                 <Image
                   src="/logo.png"
                   alt={siteConfig.companyName}
                   fill
-                  sizes="48px"
-                  className="object-contain p-1 transition-transform duration-300 group-hover:scale-110"
+                  sizes="64px"
+                  className="object-contain p-0.5 transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
 

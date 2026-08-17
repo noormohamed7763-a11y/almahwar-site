@@ -4,14 +4,12 @@ import { siteConfig } from '@/config/site'
  * تنظيف وتجهيز رقم الهاتف بالصيغة الدولية المعتمدة للمملكة العربية السعودية (966XXXXXXXXX)
  */
 export function formatSaudiPhoneNumber(rawPhone?: string): string {
-  // إزالة أي أحرف غير رقمية مثل المسافات، الأقواس، علامة الزائد، إلخ.
   const digits = (rawPhone ?? '').replace(/\D/g, '')
 
   if (digits.startsWith('966')) return digits
   if (digits.startsWith('05')) return `966${digits.slice(1)}`
   if (digits.startsWith('5')) return `966${digits}`
 
-  // إذا كان الرابط كاملاً للواتساب، نستخرج الرقم منه
   if (digits.includes('wa.me')) {
     const numOnly = digits.split('wa.me/')[1]?.replace(/\D/g, '')
     if (numOnly) return formatSaudiPhoneNumber(numOnly)
@@ -25,41 +23,69 @@ export function formatSaudiPhoneNumber(rawPhone?: string): string {
  */
 export function getGeneralConsultationUrl(): string {
   const phone = formatSaudiPhoneNumber(siteConfig.phone)
-  const message = `السلام عليكم ورحمة الله وبركاته،
-أود الاستفسار عن خدمات المقاولات والحلول الإنشائية التي تقدمونها، وأرغب في الحصول على استشارة هندسية.`
+  const message = `السلام عليكم ورحمة الله وبركاته 🏗️
+أود الاستفسار عن خدمات المقاولات والحلول الإنشائية الهندسية التي تقدمونها عبر الموقع:
+
+🌐 *موقع الشركة:* ${siteConfig.domain}
+
+أرغب في الحصول على استشارة هندسية مجانية وتفاصيل التوريد والتركيب والأسعار التقديرية.
+وشكراً لكم.`
+
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
 
 /**
- * توليد رابط استفسار مخصص لخدمة معينة
+ * توليد رابط استفسار مخصص لخدمة معينة مع الرابط والمواصفات
  */
-export function getServiceInquiryUrl(serviceTitle: string): string {
+export function getServiceInquiryUrl(serviceTitle: string, slug?: string): string {
   const phone = formatSaudiPhoneNumber(siteConfig.phone)
-  const message = `السلام عليكم ورحمة الله وبركاته،
-أود الاستفسار عن تفاصيل وأسعار خدمة: *${serviceTitle}*
-وأرغب في معرفة المساحات والتكلفة التقديرية للتنفيذ.`
+  const serviceUrl = slug
+    ? `${siteConfig.domain}/services/${slug}`
+    : siteConfig.domain
+
+  const message = `السلام عليكم ورحمة الله وبركاته 🏗️
+أود الاستفسار عن تفاصيل وأسعار الخدمة الموضحة بالموقع:
+
+🛠️ *الخدمة:* ${serviceTitle.trim()}
+🔗 *رابط الخدمة:* ${serviceUrl}
+
+📌 *الاستفسارات المطلوبة:*
+• المواصفات الفنية المعتمدة وكود البناء
+• التكلفة التقديرية للمتر المربع
+• مدة التنفيذ وشروط الضمان المعتمد
+
+أرغب في الحصول على استشارة هندسية وعرض سعر تفصيلي، وشكراً لكم.`
+
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }
 
 /**
- * توليد رابط استفسار مخصص لمشروع معين
+ * توليد رابط استفسار مخصص لمشروع معين مع الرابط والمواصفات
  */
 export function generateProjectWhatsAppUrl(
   projectTitle: string,
   category?: string,
-  location?: string
+  location?: string,
+  slug?: string
 ): string {
   const phone = formatSaudiPhoneNumber(siteConfig.phone)
+  const projectUrl = slug
+    ? `${siteConfig.domain}/projects/${slug}`
+    : siteConfig.domain
 
-  const message = `السلام عليكم ورحمة الله وبركاته،
-
+  const message = `السلام عليكم ورحمة الله وبركاته 🏗️
 أرغب في الاستفسار عن تفاصيل تنفيذ المشروع المعروض بالموقع:
 
-📌 *المشروع:* ${projectTitle}
+📌 *المشروع:* ${projectTitle.trim()}
 🏷️ *التصنيف:* ${category || 'مقاولات عامة'}
-📍 *الموقع المطلوب:* ${location || siteConfig.mainCity}
+📍 *الموقع:* ${location || siteConfig.mainCity}
+🔗 *رابط المشروع:* ${projectUrl}
 
-أرغب في معرفة المواصفات الفنية والتكلفة ومدة التنفيذ المقدرة.
+📝 *الاستفسارات الفنية:*
+• المواصفات الفنية والمواد المستخدمة في التنفيذ
+• إمكانية تنفيذ مشروع مماثل في موقعنا
+• التكلفة التقديرية والمدة المطلوبة
+
 وشكراً لكم.`
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
@@ -76,14 +102,15 @@ export function getContactFormWhatsAppUrl(
 ): string {
   const phone = formatSaudiPhoneNumber(siteConfig.phone)
 
-  const formattedMessage = `*طلب استفسار جديد عبر الموقع الإلكتروني* 🏗️
-━━━━━━━━━━━━━━━━━━
-👤 *الاسم:* ${name.trim()}
+  const formattedMessage = `*طلب استفسار وعرض سعر جديد عبر الموقع* 🏗️
+━━━━━━━━━━━━━━━━━━━━
+👤 *اسم العميل:* ${name.trim()}
 📱 *جوال العميل:* ${phoneInput.trim()}
 🛠️ *الخدمة المطلوبة:* ${service.trim()}
-📝 *تفاصيل الطلب:*
+📍 *تفاصيل الطلب والمواصفات:*
 ${messageText.trim()}
-━━━━━━━━━━━━━━━━━━`
+🌐 *مصدر الطلب:* ${siteConfig.domain}
+━━━━━━━━━━━━━━━━━━━━`
 
   return `https://wa.me/${phone}?text=${encodeURIComponent(formattedMessage)}`
 }

@@ -22,7 +22,8 @@ export default function ProjectCard({ project, priority = false }: ProjectCardPr
   const whatsappUrl = generateProjectWhatsAppUrl(
     project.title,
     project.category,
-    project.location
+    project.location,
+    project.slug
   )
 
   const imgSrc = project.image || '/images/placeholder-project.jpg'

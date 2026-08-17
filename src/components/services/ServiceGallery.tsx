@@ -19,9 +19,10 @@ import { getServiceInquiryUrl } from '@/utils/whatsapp'
 interface ServiceGalleryProps {
   images: ServiceImageItem[]
   serviceTitle: string
+  serviceSlug?: string
 }
 
-export default function ServiceGallery({ images, serviceTitle }: ServiceGalleryProps) {
+export default function ServiceGallery({ images, serviceTitle, serviceSlug }: ServiceGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   if (!images || images.length === 0) {
@@ -232,7 +233,7 @@ export default function ServiceGallery({ images, serviceTitle }: ServiceGalleryP
               {/* أزرار الإجراء السريع */}
               <div className="mt-6 pt-4 border-t border-white/10 space-y-3">
                 <a
-                  href={getServiceInquiryUrl(`${serviceTitle} - ${activeImage.caption?.substring(0, 40) || ''}`)}
+                  href={getServiceInquiryUrl(`${serviceTitle} - ${activeImage.caption?.substring(0, 40) || ''}`, serviceSlug)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#25d366] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#25d366]/20 transition hover:brightness-110"

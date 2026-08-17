@@ -60,13 +60,14 @@ export default function Navbar() {
             className="group flex min-w-0 shrink-0 items-center gap-3.5"
             aria-label={siteConfig.companyName}
           >
-            <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059]/60 group-hover:shadow-md sm:h-12 sm:w-12">
+            {/* 🌟 إطار الشعار المطور مع الهالة الذهبية والظل المعماري */}
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#c5a059]/40 bg-white p-1 shadow-md shadow-[#c5a059]/20 ring-1 ring-black/5 transition-all duration-300 group-hover:scale-105 group-hover:border-[#c5a059] group-hover:shadow-lg group-hover:shadow-[#c5a059]/30 sm:h-14 sm:w-14">
               <Image
                 src="/logo.png"
                 alt={siteConfig.companyName}
                 fill
                 priority
-                sizes="48px"
+                sizes="56px"
                 className="object-contain p-0.5 transition-transform duration-300 group-hover:scale-110"
               />
             </div>
@@ -74,7 +75,7 @@ export default function Navbar() {
               <span className="truncate text-sm font-black text-[#1a233a] transition-colors duration-200 group-hover:text-[#c5a059] sm:text-base">
                 {siteConfig.companyName}
               </span>
-              <span className="mt-0.5 text-[9px] font-bold tracking-wider text-gray-500 uppercase transition-colors duration-200 group-hover:text-[#1a233a] sm:text-[10px]">
+              <span className="mt-0.5 text-[9px] font-bold tracking-wider text-[#c5a059] uppercase transition-colors duration-200 group-hover:text-[#1a233a] sm:text-[10px]">
                 {siteConfig.companyNameEn}
               </span>
             </div>

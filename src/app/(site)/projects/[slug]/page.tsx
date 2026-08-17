@@ -88,7 +88,7 @@ export default async function SingleProjectPage({ params }: ProjectPageProps) {
     notFound()
   }
 
-  const whatsappUrl = generateProjectWhatsAppUrl(project.title, project.category, project.location)
+  const whatsappUrl = generateProjectWhatsAppUrl(project.title, project.category, project.location, project.slug)
   const fullImageUrl = resolveImageUrl(project.image)
 
   const jsonLd = {

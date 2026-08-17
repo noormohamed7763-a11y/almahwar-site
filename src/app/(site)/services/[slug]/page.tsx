@@ -79,7 +79,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
   // خدمات أخرى بترتيب صريح — بدونه كانت النتيجة غير محدَّدة مع take
   const otherServices = await listOtherServices(service.id, 4)
 
-  const whatsappUrl = getServiceInquiryUrl(service.title)
+  const whatsappUrl = getServiceInquiryUrl(service.title, service.slug)
   const serviceUrl = `${siteConfig.domain}/services/${service.slug}`
 
   // 1. Breadcrumb JSON-LD
@@ -219,6 +219,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
               <ServiceGallery
                 images={service.images}
                 serviceTitle={service.title}
+                serviceSlug={service.slug}
               />
             )}
 
