@@ -47,13 +47,20 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
     return { title: `المشروع غير موجود | ${siteConfig.companyName}` }
   }
 
-  const title = `${project.title} | ${siteConfig.companyName}`
-  const description = project.description
+  const title = `مشروع ${project.title} بـ ${project.location} | ${siteConfig.companyName}`
+  const description = `${project.description.substring(0, 150)}... تنفيذ ${project.category} بـ ${project.location} بمواصفات هندسية معتمدة.`
   const imageUrl = resolveImageUrl(project.image)
 
   return {
     title,
     description,
+    keywords: [
+      project.title,
+      project.category,
+      `مشروع ${project.category}`,
+      `مقاولات ${project.location}`,
+      siteConfig.companyName,
+    ],
     openGraph: {
       title,
       description,

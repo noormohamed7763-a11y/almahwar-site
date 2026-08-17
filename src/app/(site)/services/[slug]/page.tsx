@@ -35,19 +35,33 @@ export async function generateMetadata({
     }
   }
 
+  const metaTitle = `${service.title} بجدة والسعودية | توريد وتركيب بمواصفات معتمدة`
+  const metaDesc = `${service.description.substring(0, 150)}... توريد وتركيب معتمد بكود البناء السعودي وضمان شامل.`
+
   return {
-    title: `${service.title} | ${siteConfig.companyName}`,
-    description: service.description.substring(0, 160),
-    keywords: [service.title, 'مقاولات', siteConfig.companyName],
+    title: metaTitle,
+    description: metaDesc,
+    keywords: [
+      service.title,
+      `${service.title} جدة`,
+      `أسعار ${service.title}`,
+      `شركة ${service.title}`,
+      'مقاولات عامة جدة',
+      siteConfig.companyName,
+    ],
     alternates: {
       canonical: `${siteConfig.domain}/services/${service.slug}`,
     },
     openGraph: {
-      title: `${service.title} | ${siteConfig.companyName}`,
-      description: service.description.substring(0, 160),
+      title: metaTitle,
+      description: metaDesc,
       url: `${siteConfig.domain}/services/${service.slug}`,
+      siteName: siteConfig.companyName,
       locale: 'ar_SA',
       type: 'website',
+      images: service.images?.[0]?.url
+        ? [{ url: service.images[0].url, alt: service.title }]
+        : [{ url: `${siteConfig.domain}/images/hero/sandwich-panel-1.jpg` }],
     },
   }
 }
@@ -66,9 +80,100 @@ export default async function ServicePage({ params }: ServicePageProps) {
   const otherServices = await listOtherServices(service.id, 4)
 
   const whatsappUrl = getServiceInquiryUrl(service.title)
+  const serviceUrl = `${siteConfig.domain}/services/${service.slug}`
+
+  // 1. Breadcrumb JSON-LD
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'الرئيسية',
+        item: siteConfig.domain,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'خدماتنا',
+        item: `${siteConfig.domain}/services`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: service.title,
+        item: serviceUrl,
+      },
+    ],
+  }
+
+  // 2. Service JSON-LD
+  const serviceLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.title,
+    serviceType: service.title,
+    provider: {
+      '@type': 'LocalBusiness',
+      name: siteConfig.companyName,
+      telephone: siteConfig.phone,
+      url: siteConfig.domain,
+    },
+    areaServed: {
+      '@type': 'AdministrativeArea',
+      name: 'جدة والمنطقة الغربية والمملكة العربية السعودية',
+    },
+    description: service.description.substring(0, 250),
+    url: serviceUrl,
+    ...(service.images?.[0]?.url && { image: service.images[0].url }),
+  }
+
+  // 3. استخراج الأسئلة الشائعة وتنسيق FAQPage Schema لجوجل SERP Rich Snippets
+  const faqList: { question: string; answer: string }[] = []
+  const matches = service.description.matchAll(/### ([^\n]+)\n+([^\n#]+)/g)
+  for (const m of matches) {
+    if (m[1] && m[2] && m[1].includes('؟')) {
+      faqList.push({
+        question: m[1].trim(),
+        answer: m[2].trim(),
+      })
+    }
+  }
+
+  const faqLd =
+    faqList.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqList.map((faq) => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: faq.answer,
+            },
+          })),
+        }
+      : null
 
   return (
     <main dir="rtl" className="overflow-x-hidden bg-[#f8fafc]">
+      {/* 🛡️ البيانات المنظّمة المحسّنة لمواصفات جوجل والنتائج الثرية */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceLd) }}
+      />
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+      )}
       {/* قسم الهيدر للخدمة */}
       <section className="bg-[#1a233a] py-14 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

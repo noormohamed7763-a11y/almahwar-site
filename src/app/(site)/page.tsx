@@ -160,34 +160,70 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. قسم الخدمات — يُخفى كاملاً إن لم تتوفر خدمات منشورة */}
+      {/* 2. قسم الخدمات — بطاقات مصورة جذابة وعصرية */}
       {services.length > 0 && (
-      <section className="bg-[#f8fafc] py-12 sm:py-20">
-        <div className="w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">خدماتنا</span>
-            <h2 className="mt-2 text-2xl font-extrabold text-[#1a233a] sm:text-3xl">حلول متكاملة لجميع احتياجاتك الإنشائية</h2>
+      <section className="bg-[#f8fafc] py-14 sm:py-24">
+        <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c5a059]/30 bg-[#c5a059]/10 px-3.5 py-1 text-xs font-black text-[#c5a059]">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>خدماتنا المعتمدة</span>
+            </span>
+            <h2 className="mt-3 text-2xl font-black text-[#1a233a] sm:text-4xl">
+              حلول مقاولات هندسية متكاملة
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-gray-500">
+              تصفح خدماتنا المصممة بأعلى معايير الجودة وكود البناء السعودي
+            </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
-            {services.map((service) => (
-              <Link
-                key={service.id}
-                href={`/services/${service.slug}`}
-                className="group flex flex-col justify-between rounded-2xl bg-white p-4 sm:p-6 shadow-sm ring-1 ring-gray-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-md hover:ring-[#c5a059]"
-              >
-                <div>
-                  <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-[#1a233a] text-[#c5a059] transition group-hover:bg-[#c5a059] group-hover:text-[#1a233a]">
-                    <ServiceIcon
-                      name={service.icon}
-                      className="h-5 w-5 sm:h-6 sm:w-6"
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {services.map((service) => {
+              const coverImage = service.image || '/images/hero/sandwich-panel-2.jpg'
+
+              return (
+                <Link
+                  key={service.id}
+                  href={`/services/${service.slug}`}
+                  className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-200/70 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-2 hover:ring-[#c5a059]/80"
+                >
+                  {/* صورة غلاف الخدمة التعبيرية */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1a233a]">
+                    <Image
+                      src={coverImage}
+                      alt={service.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
+                    {/* طبقة التدرج الداكن لثبات النص والتأثير المعماري */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#1a233a]/90 via-[#1a233a]/30 to-transparent" />
+
+                    {/* أيقونة الخدمة العائمة في زاوية الصورة */}
+                    <div className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#c5a059] text-[#1a233a] shadow-md transition duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-[#1a233a]">
+                      <ServiceIcon name={service.icon} className="h-5 w-5" />
+                    </div>
                   </div>
-                  <h3 className="mt-3 sm:mt-4 text-xs sm:text-base font-bold text-[#1a233a] group-hover:text-[#c5a059]">
-                    {service.title}
-                  </h3>
-                </div>
-              </Link>
-            ))}
+
+                  {/* تفاصيل وتوصيف الخدمة */}
+                  <div className="flex flex-1 flex-col justify-between p-5">
+                    <div>
+                      <h3 className="text-base font-extrabold text-[#1a233a] transition group-hover:text-[#c5a059]">
+                        {service.title}
+                      </h3>
+                      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-gray-500">
+                        {service.description.substring(0, 90)}...
+                      </p>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 text-xs font-bold text-[#c5a059] group-hover:text-[#1a233a]">
+                      <span>التفاصيل والمواصفات</span>
+                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-[-2px] group-hover:translate-y-[-2px]" />
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </div>
       </section>

@@ -24,7 +24,7 @@ export default async function SiteLayout({
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': ['HomeAndConstructionBusiness', 'LocalBusiness'],
+    '@type': ['HomeAndConstructionBusiness', 'LocalBusiness', 'Contractor'],
     name: siteConfig.companyName,
     alternateName: siteConfig.companyNameEn,
     url: siteConfig.domain,
@@ -33,27 +33,55 @@ export default async function SiteLayout({
     description: siteConfig.description,
     telephone: siteConfig.phone,
     email: siteConfig.email,
+    priceRange: '$$$',
     address: {
       '@type': 'PostalAddress',
       streetAddress: siteConfig.address,
       addressLocality: 'جدة',
+      addressRegion: 'منطقة مكة المكرمة',
       addressCountry: 'SA',
     },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 21.5433,
+      longitude: 39.1728,
+    },
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [
+          'Saturday',
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+        ],
+        opens: '08:00',
+        closes: '22:00',
+      },
+    ],
     serviceArea: [
       { '@type': 'Place', name: 'جدة' },
       { '@type': 'Place', name: 'مكة المكرمة' },
       { '@type': 'Place', name: 'الرياض' },
       { '@type': 'Place', name: 'المدينة المنورة' },
+      { '@type': 'Place', name: 'المملكة العربية السعودية' },
     ],
+    sameAs: [siteConfig.whatsappUrl],
     hasOfferCatalog: {
       '@type': 'OfferCatalog',
-      name: 'خدمات المقاولات',
+      name: 'خدمات المقاولات والساندوتش بانل',
       itemListElement: services.map((s) => ({
         '@type': 'Offer',
         itemOffered: {
           '@type': 'Service',
           name: s.title,
           url: `${siteConfig.domain}/services/${s.slug}`,
+          provider: {
+            '@type': 'LocalBusiness',
+            name: siteConfig.companyName,
+          },
         },
       })),
     },

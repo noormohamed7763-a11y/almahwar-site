@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, Phone, MessageSquare, Wrench } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { listPublishedServices } from '@/lib/servicesRepository'
@@ -54,29 +55,47 @@ export default async function ServicesPage() {
           </p>
         </div>
 
-        {/* شبكة عرض الخدمات */}
+        {/* شبكة عرض الخدمات المصورة */}
         {services.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {services.map((service) => {
               const Icon = getServiceIcon(service.icon)
+              const coverImage = service.image || '/images/hero/sandwich-panel-2.jpg'
+
               return (
                 <div
                   key={service.id}
-                  className="group flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200/70 transition duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-[#c5a059]/40"
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-200/70 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-2 hover:ring-[#c5a059]/80"
                 >
                   <div>
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#1a233a] text-[#c5a059] shadow-sm transition duration-300 group-hover:bg-[#c5a059] group-hover:text-[#1a233a]">
-                      <Icon className="h-7 w-7" />
+                    {/* صورة غلاف الخدمة التعبيرية */}
+                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1a233a]">
+                      <Image
+                        src={coverImage}
+                        alt={service.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1a233a]/90 via-[#1a233a]/30 to-transparent" />
+
+                      {/* أيقونة الخدمة العائمة */}
+                      <div className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#c5a059] text-[#1a233a] shadow-md transition duration-300 group-hover:scale-110 group-hover:bg-white">
+                        <Icon className="h-5 w-5" />
+                      </div>
                     </div>
-                    <h2 className="mt-5 text-lg font-bold text-[#1a233a]">
-                      {service.title}
-                    </h2>
-                    <p className="mt-3 text-sm leading-6 text-gray-600 line-clamp-3">
-                      {service.description}
-                    </p>
+
+                    <div className="p-5">
+                      <h2 className="text-base font-extrabold text-[#1a233a] transition group-hover:text-[#c5a059]">
+                        {service.title}
+                      </h2>
+                      <p className="mt-2 text-xs leading-relaxed text-gray-600 line-clamp-3">
+                        {service.description}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="mt-6 border-t border-gray-100 pt-4">
+                  <div className="p-5 pt-0">
                     <Link
                       href={`/services/${service.slug}`}
                       className="inline-flex w-full items-center justify-between rounded-xl bg-gray-50 px-4 py-2.5 text-xs font-bold text-[#1a233a] transition group-hover:bg-[#c5a059] group-hover:text-[#1a233a]"

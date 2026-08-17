@@ -43,6 +43,7 @@ export interface ServiceListItem {
   icon: string | null
   sortOrder: number
   isPublished: boolean
+  image?: string | null
 }
 
 export interface ServiceImageItem {
@@ -63,14 +64,82 @@ export interface ServiceAdminItem extends ServiceListItem {
 }
 
 /**
+ * تحديد صورة الغلاف التعبيرية للخدمة: إما الصورة الأولى المرفوعة في المعرض،
+ * أو صورة تعبيرية عالية الجودة تطابق نوع الخدمة عند عدم الرفع بعد.
+ */
+export function resolveServiceCoverImage(
+  slug: string,
+  title: string,
+  uploadedUrl?: string | null
+): string {
+  if (uploadedUrl) return uploadedUrl
+
+  const s = slug.toLowerCase()
+  const t = title.toLowerCase()
+
+  if (s.includes('sandwich') || t.includes('سندوتش') || t.includes('بانل')) {
+    return '/images/hero/sandwich-panel-2.jpg'
+  }
+  if (
+    s.includes('warehouse') ||
+    s.includes('steel') ||
+    t.includes('مستودع') ||
+    t.includes('هناجر') ||
+    t.includes('هياكل')
+  ) {
+    return '/images/projects/warehouse-1.jpg'
+  }
+  if (
+    s.includes('canop') ||
+    s.includes('fence') ||
+    t.includes('مظلات') ||
+    t.includes('سواتر')
+  ) {
+    return '/images/projects/car-canopy-1.jpg'
+  }
+  if (s.includes('garden') || t.includes('حدائ') || t.includes('جلسات')) {
+    return '/images/projects/garden-1.jpg'
+  }
+  if (
+    s.includes('painting') ||
+    t.includes('دهان') ||
+    t.includes('بوية') ||
+    s.includes('renovation') ||
+    t.includes('ترميم')
+  ) {
+    return '/images/hero/canopy-2.jpg'
+  }
+  if (s.includes('ceiling') || t.includes('جبس') || t.includes('أسقف')) {
+    return '/images/hero/sandwich-panel-1.jpg'
+  }
+
+  return '/images/hero/sandwich-panel-2.jpg'
+}
+
+/**
  * خدمات الموقع المنشورة — محتوى صفحة /services.
  * يترك الخطأ يصعد للـ error boundary.
  */
 export async function listPublishedServices(): Promise<ServiceListItem[]> {
-  return prisma.service.findMany({
+  const items = await prisma.service.findMany({
     where: { isPublished: true },
     orderBy: DISPLAY_ORDER,
-    select: LIST_FIELDS,
+    select: {
+      ...LIST_FIELDS,
+      images: {
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+        take: 1,
+        select: { url: true },
+      },
+    },
+  })
+
+  return items.map((item) => {
+    const { images, ...rest } = item
+    return {
+      ...rest,
+      image: resolveServiceCoverImage(item.slug, item.title, images[0]?.url),
+    }
   })
 }
 
@@ -461,11 +530,26 @@ export async function listServicesForNavigation(
   limit?: number,
 ): Promise<ServiceListItem[]> {
   try {
-    return await prisma.service.findMany({
+    const items = await prisma.service.findMany({
       where: { isPublished: true },
       orderBy: DISPLAY_ORDER,
       ...(limit ? { take: limit } : {}),
-      select: LIST_FIELDS,
+      select: {
+        ...LIST_FIELDS,
+        images: {
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+          take: 1,
+          select: { url: true },
+        },
+      },
+    })
+
+    return items.map((item) => {
+      const { images, ...rest } = item
+      return {
+        ...rest,
+        image: resolveServiceCoverImage(item.slug, item.title, images[0]?.url),
+      }
     })
   } catch (error) {
     console.error('[Services] تعذّر جلب خدمات التنقل، سيُخفى القسم:', error)

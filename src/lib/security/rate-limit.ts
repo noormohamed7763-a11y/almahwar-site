@@ -37,6 +37,11 @@ export const LOGIN_RATE_LIMIT: RateLimitConfig = {
   windowMs: 15 * 60 * 1000, // 15 دقيقة
 }
 
+export const PUBLIC_FORM_RATE_LIMIT: RateLimitConfig = {
+  maxFailures: 3,
+  windowMs: 10 * 60 * 1000, // 10 دقائق (3 طلبات أقصى خلال 10 دقائق)
+}
+
 /** سقف حجم الخريطة — يمنع استنزاف الذاكرة عبر ترويسات IP مزيّفة */
 const MAX_TRACKED_KEYS = 10_000
 
