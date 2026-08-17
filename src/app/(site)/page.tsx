@@ -101,58 +101,52 @@ export default async function HomePage() {
             </div>
 
             <div className="relative lg:col-span-7">
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-3 sm:space-y-4">
-                  {heroImages.slice(0, 2).map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-lg"
-                    >
-                      <Image
-                        src={item.src}
-                        alt={item.alt}
-                        fill
-                        priority={idx === 0}
-                        sizes="(max-width: 640px) 50vw, 360px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0e1424]/90 via-transparent to-transparent" />
-                      <div className="absolute bottom-2 right-2 left-2 text-right">
-                        <span className="inline-block rounded bg-[#c5a059] px-1.5 py-0.5 text-[9px] font-black text-[#1a233a]">
-                          {item.tag}
-                        </span>
-                        <p className="mt-0.5 text-[11px] font-bold text-white line-clamp-1">
-                          {item.title}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              {/* 🌟 هالة ضوئية خلفية دافئة ثلاثية الأبعاد */}
+              <div className="absolute -inset-4 rounded-full bg-[#c5a059]/20 blur-3xl opacity-60 pointer-events-none" />
 
-                <div className="space-y-3 pt-4 sm:space-y-4 sm:pt-6">
-                  {heroImages.slice(2, 4).map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-lg"
-                    >
-                      <Image
-                        src={item.src}
-                        alt={item.alt}
-                        fill
-                        sizes="(max-width: 640px) 50vw, 360px"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#0e1424]/90 via-transparent to-transparent" />
-                      <div className="absolute bottom-2 right-2 left-2 text-right">
-                        <span className="inline-block rounded bg-white px-1.5 py-0.5 text-[9px] font-black text-[#1a233a]">
-                          {item.tag}
-                        </span>
-                        <p className="mt-0.5 text-[11px] font-bold text-white line-clamp-1">
-                          {item.title}
-                        </p>
-                      </div>
+              {/* 🖼️ شبكة الصور الموحدة 2x2 بطول ومحاذاة متناسقة ومستوية */}
+              <div className="relative grid grid-cols-2 gap-3.5 sm:gap-4">
+                {heroImages.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/20 bg-[#162035] shadow-xl ring-1 ring-white/10 transition-all duration-300 hover:border-[#c5a059]/60 hover:shadow-[#c5a059]/10"
+                  >
+                    <Image
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      priority={idx < 2}
+                      sizes="(max-width: 640px) 50vw, 360px"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e1424]/90 via-[#0e1424]/20 to-transparent" />
+
+                    <div className="absolute bottom-3 right-3 left-3 text-right">
+                      <span className="inline-block rounded-md bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-2 py-0.5 text-[10px] font-black text-[#1a233a] shadow-sm">
+                        {item.tag}
+                      </span>
+                      <p className="mt-1 text-xs font-extrabold text-white line-clamp-1 group-hover:text-[#c5a059] transition duration-200">
+                        {item.title}
+                      </p>
                     </div>
-                  ))}
+                  </div>
+                ))}
+
+                {/* 🛡️ الكارت الزجاجي العائم للإنجازات والضمان (Floating Glassmorphism Card) */}
+                <div className="absolute -bottom-5 right-2 left-2 sm:right-auto sm:left-4 z-10 flex items-center gap-3.5 rounded-2xl border border-white/25 bg-[#0e1424]/90 px-4 py-3 shadow-2xl backdrop-blur-md ring-1 ring-white/10">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#c5a059] text-[#1a233a] shadow-md">
+                    <Award className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-xs font-black text-white sm:text-sm">
+                      <span>+150 مشروع مكتمل</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#c5a059]" />
+                      <span className="text-[#c5a059]">ضمان 10 سنوات</span>
+                    </div>
+                    <p className="text-[10px] text-gray-300 mt-0.5">
+                      تنفيذ معتمد وفق كود البناء السعودي
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
