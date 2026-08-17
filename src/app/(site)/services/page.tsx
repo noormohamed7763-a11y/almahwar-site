@@ -4,6 +4,7 @@ import { ArrowLeft, Phone, MessageSquare, Wrench } from 'lucide-react'
 import { siteConfig } from '@/config/site'
 import { listPublishedServices } from '@/lib/servicesRepository'
 import { getServiceIcon } from '@/lib/serviceIcons'
+import { getGeneralConsultationUrl } from '@/utils/whatsapp'
 
 export const metadata = {
   title: `خدماتنا الهندسية والإنشائية | ${siteConfig.companyName}`,
@@ -111,7 +112,7 @@ export default async function ServicesPage() {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <a
-              href={`https://wa.me/${siteConfig.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('السلام عليكم، أود الاستفسار عن خدماتكم الإنشائية وطلب معاينة هندسية.')}`}
+              href={getGeneralConsultationUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-6 py-3.5 text-sm font-bold text-[#1a233a] shadow-md transition hover:brightness-105"

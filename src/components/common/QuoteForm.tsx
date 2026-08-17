@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { Send, CheckCircle2, MessageSquare, ExternalLink } from 'lucide-react'
 import { siteConfig } from '@/config/site'
-import { formatSaudiPhoneNumber } from '@/utils/whatsapp'
+import { getContactFormWhatsAppUrl } from '@/utils/whatsapp'
 
 interface QuoteFormProps {
   serviceName?: string
@@ -20,17 +20,16 @@ export default function QuoteForm({ serviceName = 'عام' }: QuoteFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const message = `*طلب عرض سعر جديد* 🏗️
-━━━━━━━━━━━━━━━━━━
-👤 *الاسم:* ${name.trim()}
-📱 *الجوال:* ${phone.trim()}
-📍 *المدينة:* ${city}
-🛠️ *الخدمة:* ${serviceName}
-📝 *ملاحظات:* ${notes.trim() || 'لا يوجد'}
-━━━━━━━━━━━━━━━━━━`
+    const details = notes.trim()
+      ? `المدينة: ${city}\nالملاحظات والمواصفات: ${notes.trim()}`
+      : `المدينة: ${city}`
 
-    const cleanPhone = formatSaudiPhoneNumber(siteConfig.phone)
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`
+    const whatsappUrl = getContactFormWhatsAppUrl(
+      name,
+      phone,
+      serviceName,
+      details
+    )
 
     setGeneratedUrl(whatsappUrl)
     setIsSubmitted(true)

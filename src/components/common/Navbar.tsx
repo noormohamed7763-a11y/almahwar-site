@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Menu, X, Phone, Mail, MessageCircle } from 'lucide-react'
 import { siteConfig } from '@/config/site'
-import { formatSaudiPhoneNumber } from '@/utils/whatsapp'
+import { getGeneralConsultationUrl } from '@/utils/whatsapp'
 
 const navItems = [
   { label: 'الرئيسية', href: '/' },
@@ -17,8 +17,7 @@ const navItems = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const cleanPhone = formatSaudiPhoneNumber(siteConfig.phone)
-  const directWhatsappUrl = siteConfig.whatsapp || `https://wa.me/${cleanPhone}`
+  const directWhatsappUrl = getGeneralConsultationUrl()
 
   return (
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">

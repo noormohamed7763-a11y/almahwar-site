@@ -1,5 +1,6 @@
 import Navbar from '@/components/common/Navbar'
 import Footer from '@/components/common/Footer'
+import FloatingWhatsApp from '@/components/common/FloatingWhatsApp'
 import { siteConfig } from '@/config/site'
 import { listServicesForNavigation } from '@/lib/servicesRepository'
 
@@ -69,6 +70,7 @@ export default async function SiteLayout({
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer />
+      <FloatingWhatsApp />
     </>
   )
 }

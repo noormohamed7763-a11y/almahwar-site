@@ -6,7 +6,6 @@ import {
   Award,
   CalendarCheck,
   Wallet,
-  MessageCircle,
   ArrowUpRight,
   ShieldCheck,
   Sparkles,
@@ -16,7 +15,6 @@ import { publishedArticles } from '@/data/siteData'
 import { listServicesForNavigation } from '@/lib/servicesRepository'
 import ServiceIcon from '@/components/common/ServiceIcon'
 import FeaturedProjectsSection from '@/components/home/FeaturedProjectsSection'
-import { formatSaudiPhoneNumber } from '@/utils/whatsapp'
 
 const features = [
   {
@@ -49,11 +47,6 @@ const heroImages = [
 ]
 
 export default async function HomePage() {
-  const cleanPhone = formatSaudiPhoneNumber(siteConfig.phone)
-  const whatsappConsultationUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-    'السلام عليكم، أرغب في الحصول على استشارة وعرض سعر بخصوص مشروعي.'
-  )}`
-
   // شبكة الخدمات من القاعدة: كانت من مصفوفة ثابتة بـ slugs مختلفة عن
   // الخدمات الفعلية فكانت أكثر بطاقاتها تؤدي إلى 404
   const services = await listServicesForNavigation(8)
@@ -260,17 +253,6 @@ export default async function HomePage() {
       </section>
       )}
 
-      {/* زر الواتساب العائم */}
-      <a
-        href={whatsappConsultationUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="تواصل معنا عبر الواتساب"
-        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-50 inline-flex items-center gap-2 rounded-full bg-[#25d366] px-4 py-3 text-xs font-bold text-white shadow-xl shadow-[#25d366]/30 transition hover:scale-105 active:scale-95 sm:px-5 sm:py-3.5 sm:text-sm"
-      >
-        <MessageCircle className="h-5 w-5" />
-        <span>واتساب</span>
-      </a>
     </main>
   )
 }

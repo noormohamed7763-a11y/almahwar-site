@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, MessageSquare } from 'lucide-react'
 import { siteConfig } from '@/config/site'
+import { getContactFormWhatsAppUrl, getGeneralConsultationUrl } from '@/utils/whatsapp'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,39 +14,15 @@ export default function ContactPage() {
   })
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // تنظيف وتجهيز رقم الواتساب بالصيغة الدولية المعتمدة
-  const getCleanWhatsAppNumber = (rawNumber: string = '') => {
-    let clean = rawNumber.replace(/[^0-9]/g, '')
-    if (clean.startsWith('05')) {
-      clean = '966' + clean.substring(1)
-    } else if (clean.startsWith('5')) {
-      clean = '966' + clean
-    }
-    return clean || '966500000000'
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const formattedMessage = `*طلب استفسار جديد عبر الموقع الإلكتروني* 🏗️
-━━━━━━━━━━━━━━━━━━
-👤 *الاسم:* ${formData.name}
-📱 *رقم الجوال:* ${formData.phone}
-🛠️ *الخدمة المطلوبة:* ${formData.service}
-📝 *التفاصيل:*
-${formData.message}
-━━━━━━━━━━━━━━━━━━`
-
-    const rawWhatsApp = siteConfig?.whatsapp || siteConfig?.phone || ''
-    let waUrl = ''
-
-    if (rawWhatsApp.startsWith('http')) {
-      const separator = rawWhatsApp.includes('?') ? '&' : '?'
-      waUrl = `${rawWhatsApp}${separator}text=${encodeURIComponent(formattedMessage)}`
-    } else {
-      const cleanNum = getCleanWhatsAppNumber(rawWhatsApp)
-      waUrl = `https://wa.me/${cleanNum}?text=${encodeURIComponent(formattedMessage)}`
-    }
+    const waUrl = getContactFormWhatsAppUrl(
+      formData.name,
+      formData.phone,
+      formData.service,
+      formData.message
+    )
 
     setIsSubmitted(true)
 
@@ -93,13 +70,13 @@ ${formData.message}
                   <div>
                     <span className="block text-xs text-gray-400">واتساب المبيعات</span>
                     <a 
-                      href={`https://wa.me/${getCleanWhatsAppNumber(siteConfig.whatsapp || siteConfig.phone)}`} 
+                      href={getGeneralConsultationUrl()} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="tap-area font-bold text-white transition hover:text-[#c5a059]"
                       dir="ltr"
                     >
-                      {siteConfig.whatsapp || siteConfig.phone}
+                      {siteConfig.phone}
                     </a>
                   </div>
                 </div>

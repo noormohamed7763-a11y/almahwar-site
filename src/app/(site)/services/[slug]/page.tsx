@@ -15,6 +15,7 @@ import { siteConfig } from '@/config/site'
 import { getServiceBySlug, listOtherServices } from '@/lib/servicesRepository'
 import ServiceIcon from '@/components/common/ServiceIcon'
 import QuoteForm from '@/components/common/QuoteForm'
+import { getServiceInquiryUrl } from '@/utils/whatsapp'
 
 interface ServicePageProps {
   params: Promise<{ slug: string }>
@@ -62,9 +63,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
   // خدمات أخرى بترتيب صريح — بدونه كانت النتيجة غير محدَّدة مع take
   const otherServices = await listOtherServices(service.id, 4)
 
-  const whatsappUrl = `${siteConfig.whatsapp}?text=${encodeURIComponent(
-    `أرغب في الاستفسار عن خدمة ${service.title} والحصول على عرض سعر مناسب.`,
-  )}`
+  const whatsappUrl = getServiceInquiryUrl(service.title)
 
   return (
     <main dir="rtl" className="overflow-x-hidden bg-[#f8fafc]">
