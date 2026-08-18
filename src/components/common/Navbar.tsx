@@ -22,7 +22,7 @@ export default function Navbar() {
   return (
     <header dir="rtl" className="sticky top-0 z-50 w-full shadow-lg shadow-[#1a233a]/10">
       <div className="bg-[#1a233a] text-gray-300">
-        <div className="flex w-full items-center justify-between gap-2 px-0 py-2 text-[11px] sm:px-6 sm:text-sm lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="flex w-full items-center justify-between gap-2 px-4 py-2 text-[11px] sm:px-6 sm:text-sm lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="flex min-w-0 items-center gap-2 sm:gap-6">
             <a
               href={`tel:${siteConfig.phone}`}
@@ -54,10 +54,10 @@ export default function Navbar() {
       </div>
 
       <div className="border-b border-gray-100 bg-white">
-        <div className="flex w-full items-center justify-between gap-3 px-0 py-3.5 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="flex w-full items-center gap-3 px-4 py-3.5 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <Link
             href="/"
-            className="group flex min-w-0 shrink-0 items-center gap-3.5"
+            className="group flex min-w-0 flex-1 items-center gap-3.5"
             aria-label={siteConfig.companyName}
           >
             {/* 🌟 إطار الشعار المطور مع الهالة الذهبية والظل المعماري */}
@@ -75,7 +75,7 @@ export default function Navbar() {
               <span className="truncate text-sm font-black text-[#1a233a] transition-colors duration-200 group-hover:text-[#c5a059] sm:text-base">
                 {siteConfig.companyName}
               </span>
-              <span className="mt-0.5 text-[9px] font-bold tracking-wider text-[#c5a059] uppercase transition-colors duration-200 group-hover:text-[#1a233a] sm:text-[10px]">
+              <span className="mt-0.5 truncate text-[9px] font-bold tracking-wider text-[#c5a059] uppercase transition-colors duration-200 group-hover:text-[#1a233a] sm:text-[10px]">
                 {siteConfig.companyNameEn}
               </span>
             </div>
@@ -93,7 +93,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               href="/contact"
               className="hidden rounded-full bg-gradient-to-l from-[#c5a059] to-[#d9b87a] px-5 py-2.5 text-xs font-bold text-[#1a233a] shadow-md shadow-[#c5a059]/20 transition duration-300 hover:brightness-105 active:scale-95 lg:inline-flex"
@@ -105,15 +105,40 @@ export default function Navbar() {
               type="button"
               onClick={() => setIsOpen((prev) => !prev)}
               aria-label={isOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 text-[#1a233a] transition hover:border-[#c5a059] hover:text-[#c5a059] lg:hidden"
+              className="
+                inline-flex
+                h-11 w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                border-2
+                border-[#d9b87a]
+                bg-[#1a233a]
+                text-[#f3d79d]
+                shadow-[0_0_0_1px_rgba(197,160,89,0.14),0_8px_18px_rgba(26,35,58,0.18)]
+                ring-2
+                ring-[#c5a059]/25
+                transition-all
+                duration-300
+                hover:border-[#f0d38b]
+                hover:bg-[#253252]
+                hover:text-[#f9e8ba]
+                active:scale-95
+                lg:hidden
+              "
             >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isOpen ? (
+                <X className="h-6 w-6 stroke-[2.5]" />
+              ) : (
+                <Menu className="h-6 w-6 stroke-[2.5]" />
+              )}
             </button>
           </div>
         </div>
 
         {isOpen && (
-          <nav className="border-t border-gray-100 bg-white px-0 py-4 lg:hidden">
+          <nav className="border-t border-gray-100 bg-white px-4 py-4 lg:hidden">
             <div className="flex flex-col gap-1">
               {navItems.map((item) => (
                 <Link

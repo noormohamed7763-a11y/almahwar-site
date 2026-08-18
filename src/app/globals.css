@@ -13,6 +13,9 @@
 
 html {
   scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 @layer base {
@@ -25,6 +28,9 @@ html {
     margin: 0;
     padding: 0;
     min-height: 100%;
+    overflow-x: hidden;
+    max-width: 100%;
+    overscroll-behavior-y: none;
   }
 
   body {
@@ -79,4 +85,29 @@ html {
   .tap-area::after {
     content: none;
   }
+}
+
+/**
+ * أنيميشن الحركة اللانهائية المسرّعة بكرت الشاشة (GPU Accelerated Marquee)
+ */
+@keyframes marquee-rtl {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-rtl 35s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover,
+.animate-marquee:focus-within,
+.animate-marquee:active {
+  animation-play-state: paused;
 }

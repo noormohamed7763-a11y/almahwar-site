@@ -15,6 +15,8 @@ import { publishedArticles } from '@/data/siteData'
 import { listServicesForNavigation } from '@/lib/servicesRepository'
 import ServiceIcon from '@/components/common/ServiceIcon'
 import FeaturedProjectsSection from '@/components/home/FeaturedProjectsSection'
+import ProjectMarqueeSection from '@/components/home/ProjectMarqueeSection'
+import ServiceCard from '@/components/services/ServiceCard'
 
 const features = [
   {
@@ -55,7 +57,7 @@ export default async function HomePage() {
     <main className="overflow-x-hidden bg-white" dir="rtl">
       {/* 1. قسم البداية (Hero Section) */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0e1424] via-[#162035] to-[#0f172a] py-10 text-white sm:py-16 lg:py-24">
-        <div className="relative w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="relative w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="grid items-center gap-8 lg:grid-cols-12 lg:gap-12">
             <div className="text-right lg:col-span-5">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1 text-[11px] font-bold text-[#c5a059] shadow-inner">
@@ -82,7 +84,7 @@ export default async function HomePage() {
 
                 <Link
                   href="/contact"
-                  className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-xs font-semibold text-white transition hover:bg-white/10 sm:w-auto sm:text-sm"
+                  className="inline-flex w-full items-center justify-center rounded-xl border border-[#c5a059] bg-[#c5a059]/15 px-5 py-3 text-xs font-bold text-[#c5a059] shadow-md shadow-[#c5a059]/10 backdrop-blur-sm transition-all hover:bg-[#c5a059] hover:text-[#1a233a] sm:w-auto sm:text-sm"
                 >
                   طلب عرض سعر
                 </Link>
@@ -131,22 +133,22 @@ export default async function HomePage() {
                     </div>
                   </div>
                 ))}
+              </div>
 
-                {/* 🛡️ الكارت الزجاجي العائم للإنجازات والضمان (Floating Glassmorphism Card) */}
-                <div className="absolute -bottom-5 right-2 left-2 sm:right-auto sm:left-4 z-10 flex items-center gap-3.5 rounded-2xl border border-white/25 bg-[#0e1424]/90 px-4 py-3 shadow-2xl backdrop-blur-md ring-1 ring-white/10">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#c5a059] text-[#1a233a] shadow-md">
-                    <Award className="h-5 w-5" />
+              {/* 🛡️ الكارت الزجاجي للإنجازات والضمان (مستقل ومستوي أسفل الصور للجوال وعائم للديسktop) */}
+              <div className="relative mt-4 sm:absolute sm:mt-0 sm:-bottom-5 sm:left-4 sm:right-auto z-10 flex items-center gap-3.5 rounded-2xl border border-white/25 bg-[#0e1424]/95 px-4 py-3 shadow-2xl backdrop-blur-md ring-1 ring-white/10">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#c5a059] text-[#1a233a] shadow-md">
+                  <Award className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-xs font-black text-white sm:text-sm">
+                    <span>+150 مشروع مكتمل</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#c5a059]" />
+                    <span className="text-[#c5a059]">ضمان 10 سنوات</span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-1.5 text-xs font-black text-white sm:text-sm">
-                      <span>+150 مشروع مكتمل</span>
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#c5a059]" />
-                      <span className="text-[#c5a059]">ضمان 10 سنوات</span>
-                    </div>
-                    <p className="text-[10px] text-gray-300 mt-0.5">
-                      تنفيذ معتمد وفق كود البناء السعودي
-                    </p>
-                  </div>
+                  <p className="text-[10px] text-gray-300 mt-0.5">
+                    تنفيذ معتمد وفق كود البناء السعودي
+                  </p>
                 </div>
               </div>
             </div>
@@ -154,7 +156,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. قسم الخدمات — بطاقات مصورة جذابة وعصرية */}
+      {/* 2. شريط المشاريع المتحرك سينمائياً بلا توقف */}
+      <ProjectMarqueeSection />
+
+      {/* 3. قسم الخدمات — بطاقات مصورة جذابة وعصرية */}
       {services.length > 0 && (
       <section className="bg-[#f8fafc] py-14 sm:py-24">
         <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
@@ -171,53 +176,10 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {services.map((service) => {
-              const coverImage = service.image || '/images/hero/sandwich-panel-2.jpg'
-
-              return (
-                <Link
-                  key={service.id}
-                  href={`/services/${service.slug}`}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-gray-200/70 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:ring-2 hover:ring-[#c5a059]/80"
-                >
-                  {/* صورة غلاف الخدمة التعبيرية */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1a233a]">
-                    <Image
-                      src={coverImage}
-                      alt={service.title}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    {/* طبقة التدرج الداكن لثبات النص والتأثير المعماري */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1a233a]/90 via-[#1a233a]/30 to-transparent" />
-
-                    {/* أيقونة الخدمة العائمة في زاوية الصورة */}
-                    <div className="absolute bottom-3 right-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#c5a059] text-[#1a233a] shadow-md transition duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-[#1a233a]">
-                      <ServiceIcon name={service.icon} className="h-5 w-5" />
-                    </div>
-                  </div>
-
-                  {/* تفاصيل وتوصيف الخدمة */}
-                  <div className="flex flex-1 flex-col justify-between p-5">
-                    <div>
-                      <h3 className="text-base font-extrabold text-[#1a233a] transition group-hover:text-[#c5a059]">
-                        {service.title}
-                      </h3>
-                      <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-gray-500">
-                        {service.description.substring(0, 90)}...
-                      </p>
-                    </div>
-
-                    <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 text-xs font-bold text-[#c5a059] group-hover:text-[#1a233a]">
-                      <span>التفاصيل والمواصفات</span>
-                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-[-2px] group-hover:translate-y-[-2px]" />
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+            {services.map((service) => (
+              <ServiceCard key={service.id} service={service} />
+            ))}
           </div>
         </div>
       </section>
@@ -228,7 +190,7 @@ export default async function HomePage() {
 
       {/* 4. قسم لماذا نحن */}
       <section className="bg-[#1a233a] py-12 sm:py-20 text-white">
-        <div className="w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">لماذا نحن؟</span>
             <h2 className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">مميزات تجعلنا الخيار الأول</h2>
@@ -256,7 +218,7 @@ export default async function HomePage() {
       {/* 5. قسم المدونة — المسوّدات مستثناة */}
       {publishedArticles.length > 0 && (
       <section className="bg-[#f8fafc] py-12 sm:py-20">
-        <div className="w-full px-0 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:mx-auto lg:max-w-7xl lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-[#c5a059]">المدونة</span>
             <h2 className="mt-2 text-2xl font-extrabold text-[#1a233a] sm:text-3xl">أحدث المقالات الهندسية</h2>
