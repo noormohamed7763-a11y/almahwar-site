@@ -3,17 +3,27 @@ import { projectRepository } from '@/lib/projectsRepository'
 import ProjectCard from '@/components/ProjectCard'
 import { siteConfig } from '@/config/site'
 
-// ضمان جلب أحدث البيانات من قاعدة البيانات عند كل زيارة
-export const dynamic = 'force-dynamic'
+// استخدم ISR مع إعادة التحقق كل ساعة، مع الحفاظ على تحديثات فورية عبر revalidatePath
+// عند كل تغيير فعلي من Server Actions.
+export const revalidate = 3600
 
 export const metadata = {
   title: `معرض المشاريع والأعمال المنجزة | ${siteConfig.companyName}`,
   description:
     'استعرض سابقة أعمالنا في مشاريع الساندوتش بانل، المظلات، السواتر، وأعمال البناء والترميم في مختلف مناطق المملكة مع إمكانية طلب مشروع مماثل فوراً.',
+  alternates: {
+    canonical: `${siteConfig.domain}/projects`,
+  },
 }
 
 export default async function ProjectsPage() {
-  const projects = await projectRepository.getAll()
+  let projects: Awaited<ReturnType<typeof projectRepository.getAll>> = []
+
+  try {
+    projects = await projectRepository.getAll()
+  } catch (error) {
+    console.error('[ProjectsPage] failed to load projects:', error)
+  }
 
   return (
     <main className="min-h-screen bg-[#f8fafc] py-16">

@@ -23,6 +23,8 @@ export const metadata = {
   },
 }
 
+export const revalidate = 3600
+
 export default async function ServicesPage() {
   // الخدمات المنشورة فقط، مرتبة بـ sortOrder — لا بـ createdAt الذي كان
   // يعكس الترتيب ويتغير بين الطلبات عند تطابق الطوابع الزمنية

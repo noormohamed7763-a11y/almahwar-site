@@ -707,5 +707,5 @@ export const defaultProjects: ProjectItem[] = [
 
 export function getArticleBySlug(slug: string): Article | undefined {
   const decoded = decodeURIComponent(slug)
-  return articles.find((article) => article.slug === decoded || article.slug === slug)
+  return publishedArticles.find((article) => article.slug === decoded || article.slug === slug)
 }

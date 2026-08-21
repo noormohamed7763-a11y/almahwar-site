@@ -10,12 +10,22 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@arcjet/next": "^1.10.0",
+    "@casl/ability": "^7.0.1",
+    "@casl/prisma": "^2.0.2",
+    "@hookform/resolvers": "^5.9.1",
     "@prisma/client": "^6.19.3",
     "@supabase/supabase-js": "^2.112.3",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "lucide-react": "^1.31.0",
     "next": "^16.3.0",
+    "next-sitemap": "^4.2.3",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "react-hook-form": "^7.85.0",
+    "sonner": "^2.0.8",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

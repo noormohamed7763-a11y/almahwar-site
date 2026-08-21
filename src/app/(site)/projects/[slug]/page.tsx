@@ -23,6 +23,8 @@ interface ProjectPageProps {
   params: Promise<{ slug: string }>
 }
 
+export const revalidate = 3600
+
 // دالة مساعدة لضمان سلامة رابط الصورة سواء كانت محلية أو سحابية
 function resolveImageUrl(imagePath: string): string {
   if (!imagePath) return ''
@@ -33,15 +35,29 @@ function resolveImageUrl(imagePath: string): string {
 }
 
 export async function generateStaticParams() {
-  const projects = await projectRepository.getAll()
-  return projects.map((project) => ({
-    slug: project.slug,
-  }))
+  try {
+    const projects = await projectRepository.getAll()
+    return projects.map((project) => ({
+      slug: project.slug,
+    }))
+  } catch (error) {
+    console.warn(
+      '[generateStaticParams] تعذر جلب المشاريع أثناء البناء، سيتم توليد الصفحات عند أول زيارة:',
+      error,
+    )
+    return []
+  }
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params
-  const project = await projectRepository.getBySlug(slug)
+
+  let project = null
+  try {
+    project = await projectRepository.getBySlug(slug)
+  } catch (error) {
+    console.error('[ProjectMetadata] failed to load project:', error)
+  }
 
   if (!project) {
     return { title: `المشروع غير موجود | ${siteConfig.companyName}` }
@@ -82,7 +98,13 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function SingleProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params
-  const project = await projectRepository.getBySlug(slug)
+
+  let project = null
+  try {
+    project = await projectRepository.getBySlug(slug)
+  } catch (error) {
+    console.error('[SingleProjectPage] failed to load project:', error)
+  }
 
   if (!project) {
     notFound()

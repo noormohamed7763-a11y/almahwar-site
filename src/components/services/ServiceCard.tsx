@@ -133,7 +133,11 @@ export default function ServiceCard({ service }: { service: ServiceItemProp }) {
       {/* تفاصيل وتوصيف الخدمة */}
       <div className="flex flex-1 flex-col justify-between p-3.5 sm:p-5">
         <div>
-          <Link href={`/services/${service.slug}`}>
+          <Link
+            href={`/services/${service.slug}`}
+            aria-label={`عرض تفاصيل خدمة ${service.title}`}
+            className="inline-block"
+          >
             <h3 className="text-xs font-extrabold text-[#1a233a] transition group-hover:text-[#c5a059] sm:text-base">
               {service.title}
             </h3>
@@ -143,15 +147,14 @@ export default function ServiceCard({ service }: { service: ServiceItemProp }) {
           </p>
         </div>
 
-        <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5 text-[11px] font-bold text-[#c5a059] group-hover:text-[#1a233a] sm:mt-4 sm:pt-3 sm:text-xs">
-          <Link href={`/services/${service.slug}`} className="hover:underline">
-            <span>التفاصيل والمواصفات</span>
-          </Link>
+        <div className="mt-3 border-t border-gray-100 pt-2.5 sm:mt-4 sm:pt-3">
           <Link
             href={`/services/${service.slug}`}
-            className="flex items-center gap-1"
+            aria-label={`عرض تفاصيل خدمة ${service.title}`}
+            className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#c5a059] transition hover:underline group-hover:text-[#1a233a] sm:text-xs"
           >
-            <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] sm:h-4 sm:w-4" />
+            <span>التفاصيل والمواصفات</span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 transition-transform duration-300 group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] sm:h-4 sm:w-4" />
           </Link>
         </div>
       </div>

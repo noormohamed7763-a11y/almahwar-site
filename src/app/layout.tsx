@@ -1,4 +1,7 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Toaster } from 'sonner'
 import './globals.css'
 import { siteConfig } from '@/config/site'
 
@@ -77,10 +80,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const shouldLoadWebVitals =
+    process.env.NODE_ENV === 'production' &&
+    (process.env.VERCEL_ENV === 'production' || process.env.NEXT_PUBLIC_VERCEL_ENV === 'production')
+
   return (
     <html lang="ar" dir="rtl" className="overflow-x-hidden max-w-full">
       <body className="bg-gray-50 text-gray-900 antialiased font-sans overflow-x-hidden max-w-full">
         {children}
+        {shouldLoadWebVitals && <Analytics />}
+        {shouldLoadWebVitals && <SpeedInsights />}
+        <Toaster richColors position="top-left" expand closeButton />
       </body>
     </html>
   )

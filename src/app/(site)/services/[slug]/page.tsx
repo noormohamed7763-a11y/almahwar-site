@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import Image from 'next/image'
 import {
   MessageCircle,
   Phone,
@@ -23,11 +22,74 @@ interface ServicePageProps {
   params: Promise<{ slug: string }>
 }
 
+function extractFaqList(markdown: string): { question: string; answer: string }[] {
+  const lines = markdown.split(/\r?\n/)
+  const faqStartIndex = lines.findIndex((line) =>
+    /^##+\s*(الأسئلة\s*الشائعة|FAQ|Frequently\s+Asked\s+Questions)/i.test(line.trim()),
+  )
+
+  if (faqStartIndex === -1) {
+    return []
+  }
+
+  const faqItems: { question: string; answer: string }[] = []
+  let currentQuestion: string | null = null
+  let currentAnswer: string[] = []
+
+  const flushCurrent = () => {
+    if (!currentQuestion) return
+
+    const answer = currentAnswer.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+    if (answer) {
+      faqItems.push({ question: currentQuestion.trim(), answer })
+    }
+
+    currentQuestion = null
+    currentAnswer = []
+  }
+
+  for (const line of lines.slice(faqStartIndex + 1)) {
+    const trimmed = line.trim()
+
+    if (!trimmed) {
+      if (currentQuestion) {
+        currentAnswer.push('')
+      }
+      continue
+    }
+
+    if (/^###\s+/.test(trimmed)) {
+      flushCurrent()
+      currentQuestion = trimmed.replace(/^###\s+/, '')
+      continue
+    }
+
+    if (currentQuestion) {
+      if (/^##+\s+/.test(trimmed)) {
+        flushCurrent()
+        break
+      }
+      currentAnswer.push(trimmed)
+    }
+  }
+
+  flushCurrent()
+  return faqItems
+}
+
+export const revalidate = 3600
+
 export async function generateMetadata({
   params,
 }: ServicePageProps): Promise<Metadata> {
   const { slug } = await params
-  const service = await getServiceBySlug(slug)
+
+  let service = null
+  try {
+    service = await getServiceBySlug(slug)
+  } catch (error) {
+    console.error('[ServiceMetadata] failed to load service:', error)
+  }
 
   if (!service) {
     return {
@@ -69,8 +131,12 @@ export async function generateMetadata({
 export default async function ServicePage({ params }: ServicePageProps) {
   const { slug } = await params
 
-  // الخدمة مع صورها مرتبة بـ sortOrder
-  const service = await getServiceBySlug(slug)
+  let service = null
+  try {
+    service = await getServiceBySlug(slug)
+  } catch (error) {
+    console.error('[ServicePage] failed to load service:', error)
+  }
 
   if (!service) {
     notFound()
@@ -129,17 +195,9 @@ export default async function ServicePage({ params }: ServicePageProps) {
     ...(service.images?.[0]?.url && { image: service.images[0].url }),
   }
 
-  // 3. استخراج الأسئلة الشائعة وتنسيق FAQPage Schema لجوجل SERP Rich Snippets
-  const faqList: { question: string; answer: string }[] = []
-  const matches = service.description.matchAll(/### ([^\n]+)\n+([^\n#]+)/g)
-  for (const m of matches) {
-    if (m[1] && m[2] && m[1].includes('؟')) {
-      faqList.push({
-        question: m[1].trim(),
-        answer: m[2].trim(),
-      })
-    }
-  }
+  // 3. استخراج الأسئلة الشائعة من جلسة markdown الرسمية فقط، مع الاحتفاظ بمتن الجواب
+  // متعدد الأسطر وبجميع العناوين داخل قسم FAQ. هذا يجنّب تحليل النص الحر بطريقة هشّة.
+  const faqList = extractFaqList(service.description)
 
   const faqLd =
     faqList.length > 0

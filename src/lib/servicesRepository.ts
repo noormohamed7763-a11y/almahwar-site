@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { ensureUniqueSlug, slugify } from '@/utils/slug'
 
@@ -116,31 +117,44 @@ export function resolveServiceCoverImage(
   return '/images/hero/sandwich-panel-2.jpg'
 }
 
+const getCachedPublishedServices = unstable_cache(
+  async (): Promise<ServiceListItem[]> => {
+    try {
+      const items = await prisma.service.findMany({
+        where: { isPublished: true },
+        orderBy: DISPLAY_ORDER,
+        select: {
+          ...LIST_FIELDS,
+          images: {
+            orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+            take: 1,
+            select: { url: true },
+          },
+        },
+      })
+
+      return items.map((item) => {
+        const { images, ...rest } = item
+        return {
+          ...rest,
+          image: resolveServiceCoverImage(item.slug, item.title, images[0]?.url),
+        }
+      })
+    } catch (error) {
+      console.error('[Services] تعذّر جلب الخدمات المنشورة:', error)
+      return []
+    }
+  },
+  ['services-published'],
+  { revalidate: 3600, tags: ['services'] },
+)
+
 /**
  * خدمات الموقع المنشورة — محتوى صفحة /services.
  * يترك الخطأ يصعد للـ error boundary.
  */
 export async function listPublishedServices(): Promise<ServiceListItem[]> {
-  const items = await prisma.service.findMany({
-    where: { isPublished: true },
-    orderBy: DISPLAY_ORDER,
-    select: {
-      ...LIST_FIELDS,
-      images: {
-        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-        take: 1,
-        select: { url: true },
-      },
-    },
-  })
-
-  return items.map((item) => {
-    const { images, ...rest } = item
-    return {
-      ...rest,
-      image: resolveServiceCoverImage(item.slug, item.title, images[0]?.url),
-    }
-  })
+  return getCachedPublishedServices()
 }
 
 /**
@@ -430,80 +444,91 @@ const FALSE_CEILINGS_STRUCTURED_CONTENT = `تُعد الأسقف المستعا�
 ### هل يمكن تركيب إضاءة مخفية داخل السقف المستعار؟
 نعم، وتعد الإضاءة المخفية (Cove Lighting) من أجمل العناصر المعمارية التي تضفي دفئاً وفخامة على الأسقف المستعارة.`
 
+const getCachedServiceBySlug = unstable_cache(
+  async (slug: string): Promise<ServiceDetail | null> => {
+    try {
+      const decodedSlug = decodeURIComponent(slug)
+
+      const service = await prisma.service.findFirst({
+        where: {
+          isPublished: true,
+          OR: [{ slug: decodedSlug }, { slug }],
+        },
+        select: {
+          ...LIST_FIELDS,
+          images: {
+            orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+            select: { id: true, url: true, caption: true, sortOrder: true },
+          },
+        },
+      })
+
+      if (!service) return null
+
+      const isFalseCeilings =
+        service.slug.includes('false-ceilings') ||
+        (service.title.includes('أسقف') && service.title.includes('مستعارة'))
+
+      const isGypsum =
+        service.slug.includes('gypsum') ||
+        service.title.includes('جبس')
+
+      const isRenovation =
+        service.slug.includes('renovation') ||
+        service.title.includes('ترميم')
+
+      const isSandwichPanel =
+        service.slug.includes('sandwich') ||
+        service.title.includes('سندوتش') ||
+        service.title.includes('بانل')
+
+      const isPainting =
+        service.slug.includes('painting') ||
+        service.title.includes('دهان') ||
+        service.title.includes('بوية')
+
+      const isCanopy =
+        service.slug.includes('canop') ||
+        service.slug.includes('fence') ||
+        service.title.includes('مظلات') ||
+        service.title.includes('سواتر')
+
+      let finalDescription = service.description
+      if (isFalseCeilings && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
+        finalDescription = FALSE_CEILINGS_STRUCTURED_CONTENT
+      } else if (isGypsum && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
+        finalDescription = GYPSUM_STRUCTURED_CONTENT
+      } else if (isRenovation && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
+        finalDescription = RENOVATION_STRUCTURED_CONTENT
+      } else if (isSandwichPanel && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
+        finalDescription = SANDWICH_PANEL_STRUCTURED_CONTENT
+      } else if (isPainting && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
+        finalDescription = PAINTING_STRUCTURED_CONTENT
+      } else if (isCanopy && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
+        finalDescription = CANOPIES_STRUCTURED_CONTENT
+      }
+
+      const finalImages =
+        service.images.length === 0 && DEFAULT_SERVICE_IMAGES[service.slug]
+          ? DEFAULT_SERVICE_IMAGES[service.slug]
+          : service.images
+
+      return {
+        ...service,
+        description: finalDescription,
+        images: finalImages,
+      }
+    } catch (error) {
+      console.error(`[Services] تعذّر جلب الخدمة ${slug}:`, error)
+      return null
+    }
+  },
+  ['service-by-slug'],
+  { revalidate: 3600, tags: ['services'] },
+)
+
 export async function getServiceBySlug(slug: string): Promise<ServiceDetail | null> {
-  const decodedSlug = decodeURIComponent(slug)
-
-  const service = await prisma.service.findFirst({
-    where: {
-      isPublished: true,
-      OR: [{ slug: decodedSlug }, { slug }],
-    },
-    select: {
-      ...LIST_FIELDS,
-      images: {
-        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-        select: { id: true, url: true, caption: true, sortOrder: true },
-      },
-    },
-  })
-
-  if (!service) return null
-
-  // فحص نوع الخدمة لتقديم المحتوى الهيكلي المطور إن لم يكن مكتوباً بماركداون
-  const isFalseCeilings =
-    service.slug.includes('false-ceilings') ||
-    (service.title.includes('أسقف') && service.title.includes('مستعارة'))
-
-  const isGypsum =
-    service.slug.includes('gypsum') ||
-    service.title.includes('جبس')
-
-  const isRenovation =
-    service.slug.includes('renovation') ||
-    service.title.includes('ترميم')
-
-  const isSandwichPanel =
-    service.slug.includes('sandwich') ||
-    service.title.includes('سندوتش') ||
-    service.title.includes('بانل')
-
-  const isPainting =
-    service.slug.includes('painting') ||
-    service.title.includes('دهان') ||
-    service.title.includes('بوية')
-
-  const isCanopy =
-    service.slug.includes('canop') ||
-    service.slug.includes('fence') ||
-    service.title.includes('مظلات') ||
-    service.title.includes('سواتر')
-
-  let finalDescription = service.description
-  if (isFalseCeilings && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
-    finalDescription = FALSE_CEILINGS_STRUCTURED_CONTENT
-  } else if (isGypsum && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
-    finalDescription = GYPSUM_STRUCTURED_CONTENT
-  } else if (isRenovation && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
-    finalDescription = RENOVATION_STRUCTURED_CONTENT
-  } else if (isSandwichPanel && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
-    finalDescription = SANDWICH_PANEL_STRUCTURED_CONTENT
-  } else if (isPainting && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
-    finalDescription = PAINTING_STRUCTURED_CONTENT
-  } else if (isCanopy && (!service.description || service.description.length < 150 || !service.description.includes('##'))) {
-    finalDescription = CANOPIES_STRUCTURED_CONTENT
-  }
-
-  // إذا لم تكن هناك صور مرفوعة للخدمة بعد، توفير الصور والاوصاف الافتراضية للخدمة
-  const finalImages =
-    service.images.length === 0 && DEFAULT_SERVICE_IMAGES[service.slug]
-      ? DEFAULT_SERVICE_IMAGES[service.slug]
-      : service.images
-
-  return {
-    ...service,
-    description: finalDescription,
-    images: finalImages,
-  }
+  return getCachedServiceBySlug(slug)
 }
 
 /**
@@ -514,13 +539,51 @@ export async function listOtherServices(
   excludeId: string,
   limit = 4,
 ): Promise<Pick<ServiceListItem, 'id' | 'title' | 'slug'>[]> {
-  return prisma.service.findMany({
-    where: { isPublished: true, NOT: { id: excludeId } },
-    orderBy: DISPLAY_ORDER,
-    take: limit,
-    select: { id: true, title: true, slug: true },
-  })
+  try {
+    return await prisma.service.findMany({
+      where: { isPublished: true, NOT: { id: excludeId } },
+      orderBy: DISPLAY_ORDER,
+      take: limit,
+      select: { id: true, title: true, slug: true },
+    })
+  } catch (error) {
+    console.error('[Services] تعذّر جلب الخدمات الأخرى:', error)
+    return []
+  }
 }
+
+const getCachedServicesForNavigation = unstable_cache(
+  async (limit?: number): Promise<ServiceListItem[]> => {
+    try {
+      const items = await prisma.service.findMany({
+        where: { isPublished: true },
+        orderBy: DISPLAY_ORDER,
+        ...(limit ? { take: limit } : {}),
+        select: {
+          ...LIST_FIELDS,
+          images: {
+            orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+            take: 1,
+            select: { url: true },
+          },
+        },
+      })
+
+      return items.map((item) => {
+        const { images, ...rest } = item
+        return {
+          ...rest,
+          image: resolveServiceCoverImage(item.slug, item.title, images[0]?.url),
+        }
+      })
+    } catch (error) {
+      console.error('[Services] تعذّر جلب خدمات التنقل، سيُخفى القسم:', error)
+      return []
+    }
+  },
+  ['services-navigation'],
+  { revalidate: 3600, tags: ['services'] },
+)
 
 /**
  * خدمات التنقل — التذييل والبيانات المنظّمة وشبكة الصفحة الرئيسية.
@@ -529,32 +592,7 @@ export async function listOtherServices(
 export async function listServicesForNavigation(
   limit?: number,
 ): Promise<ServiceListItem[]> {
-  try {
-    const items = await prisma.service.findMany({
-      where: { isPublished: true },
-      orderBy: DISPLAY_ORDER,
-      ...(limit ? { take: limit } : {}),
-      select: {
-        ...LIST_FIELDS,
-        images: {
-          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-          take: 1,
-          select: { url: true },
-        },
-      },
-    })
-
-    return items.map((item) => {
-      const { images, ...rest } = item
-      return {
-        ...rest,
-        image: resolveServiceCoverImage(item.slug, item.title, images[0]?.url),
-      }
-    })
-  } catch (error) {
-    console.error('[Services] تعذّر جلب خدمات التنقل، سيُخفى القسم:', error)
-    return []
-  }
+  return getCachedServicesForNavigation(limit)
 }
 
 /**

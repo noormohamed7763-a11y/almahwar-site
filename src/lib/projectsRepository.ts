@@ -27,27 +27,42 @@ function mapToProjectItem(item: PrismaProject): ProjectItem {
 
 class PrismaProjectRepository implements IProjectRepository {
   async getAll(): Promise<ProjectItem[]> {
-    const items = await prisma.project.findMany({
-      orderBy: { createdAt: 'desc' },
-    })
-    return items.map(mapToProjectItem)
+    try {
+      const items = await prisma.project.findMany({
+        orderBy: { createdAt: 'desc' },
+      })
+      return items.map(mapToProjectItem)
+    } catch (error) {
+      console.error('[Projects] تعذّر جلب المشاريع، سيتم إرجاع قائمة فارغة:', error)
+      return []
+    }
   }
 
   async getById(id: string): Promise<ProjectItem | null> {
-    const item = await prisma.project.findUnique({
-      where: { id },
-    })
-    return item ? mapToProjectItem(item) : null
+    try {
+      const item = await prisma.project.findUnique({
+        where: { id },
+      })
+      return item ? mapToProjectItem(item) : null
+    } catch (error) {
+      console.error(`[Projects] تعذّر جلب المشروع ${id}:`, error)
+      return null
+    }
   }
 
   async getBySlug(slug: string): Promise<ProjectItem | null> {
-    const decodedSlug = decodeURIComponent(slug)
-    const item = await prisma.project.findFirst({
-      where: {
-        OR: [{ slug: decodedSlug }, { slug }],
-      },
-    })
-    return item ? mapToProjectItem(item) : null
+    try {
+      const decodedSlug = decodeURIComponent(slug)
+      const item = await prisma.project.findFirst({
+        where: {
+          OR: [{ slug: decodedSlug }, { slug }],
+        },
+      })
+      return item ? mapToProjectItem(item) : null
+    } catch (error) {
+      console.error(`[Projects] تعذّر جلب المشروع حسب slug ${slug}:`, error)
+      return null
+    }
   }
 
   async getFeatured(limit = 3): Promise<ProjectItem[]> {
